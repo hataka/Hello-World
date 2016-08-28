@@ -1,5 +1,5 @@
 # Hello-World
-こんにちわ hatakaです  
+こんにちわ hatakaです 改行は行末にスペースを二つ入れる  
 Hello world
 ## Links
 - <http://google.com/> 
