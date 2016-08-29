@@ -1,7 +1,9 @@
 # Hello-World
 こんにちわ
 # Memo
+<div style="text-align: center;">
 <center><img src="http://kahata.travel.coocan.jp/picture/Sea/sea002.jpg" /></center>
+</div>
 
 #Link
 * [GitHub Help](https://help.github.com/categories/writing-on-github/)
