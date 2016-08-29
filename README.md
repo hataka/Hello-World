@@ -2,8 +2,9 @@
 こんにちわ
 # Memo
 <div style="text-align: center;">
-<center><img src="http://kahata.travel.coocan.jp/picture/Sea/sea002.jpg" /></center>
+中央揃え
 </div>
+<img src="http://kahata.travel.coocan.jp/picture/Sea/sea002.jpg" />
 
 #Link
 * [GitHub Help](https://help.github.com/categories/writing-on-github/)
