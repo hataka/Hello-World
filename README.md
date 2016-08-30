@@ -4,6 +4,7 @@
 <p align="center">
 中央揃え
 
+
 <img src="http://kahata.travel.coocan.jp/picture/Sea/sea002.jpg" />
 </p>
 
