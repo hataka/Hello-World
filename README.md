@@ -1,9 +1,9 @@
 # Hello-World
 こんにちわ 変更します
 # Memo
-<div style="text-align: center;">
+<p align="center">
 中央揃え
-</div>
+</p>
 <img src="http://kahata.travel.coocan.jp/picture/Sea/sea002.jpg" />
 
 #Link
