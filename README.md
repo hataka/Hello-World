@@ -3,8 +3,8 @@
 # Memo
 <p align="center">
 中央揃え
-</p>
 <img src="http://kahata.travel.coocan.jp/picture/Sea/sea002.jpg" />
+</p>
 
 #Link
 * [GitHub Help](https://help.github.com/categories/writing-on-github/)
