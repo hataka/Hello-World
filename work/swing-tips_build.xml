@@ -19,6 +19,7 @@
   </condition>
   <path id="project.class.path">
     <pathelement location="${build.dest}" />
+    <pathelement path="C:\eclipse461\workspace\CommonLibrary" />
     <pathelement location="${java.home}/lib/javaws.jar" />
     <pathelement path="${java.class.path}" />
   </path>
