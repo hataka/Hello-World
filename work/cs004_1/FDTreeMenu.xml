@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<root title="$(CurProjectName)" icon="" expand="true">
+  <folder title="Menu" expand="true">
+    <record title="ツリーデーターを開く" action="menu" command="OpenTreeDataDialog" />
+    <record title="FlashProject" action="menu" path="F:\VCSharp\MDI\FlashDevelop\FlashDevelop\Bin\Debug\MDIFormData\FlashProject.xml" />
+    <record title="XmlTreeMenu" action="menu" path="$(BaseDir)\SettingData\XmlTreeMenu.xml" />
+    <record title="VC++2008 Sample" action="menu" path="F:\VCSharp\MDI\FlashDevelop\FlashDevelop\Bin\Debug\MDIFormData\VCPP2008_menu.xml" />
+  </folder>
+  <folder title="LocalSite">
+    <record title="PukiWki" path="http://localhost/pukiwiki/index.php" icon="F:\icons\pukiwiki.ico" />
+    <record title="FrameWork" path="http://localhost/FrameWork/FrameWork.html" />
+    <record title="C# links" path="http://localhost/VCSharp/links/dir_traverse_htmllink.php" />
+    <record title="pdf" action="webbrowser" path="F:\svgGraphics\hirano-lab\00svg-full09.pdf" />
+  </folder>
+  <folder title="WebSite">
+    <record title="Google" path="http://www.google.co.jp/" icon="http://www.google.co.jp/favicon.ico" />
+    <record title="yahoo" path="http://www.yahoo.co.jp/" />
+    <record title="プログラミング言語資料 - SAK Streets" path="http://homepage2.nifty.com/sak/w_sak3/doc/sysbrd/sak3doc.htm" />
+  </folder>
+  <folder title="ビルド" expand="true">
+    <record title="build.bat" action="RunProcess" command="C:\WINDOWS\system32\cmd.exe" args=",/k, F:\cpp\Neko\form\form_06\drawstring02\build.bat" />
+    <record title="VC# 2008 rebuild(cmd)" action="RunProcess" command="C:\WINDOWS\system32\cmd.exe" args="./k &quot;C:\Program Files\Microsoft Visual Studio 9.0\Common7\IDE\VCSExpress.exe&quot; cs004_1.csproj /rebuild" />
+    <record title="resgen" action="RunProcess" command="C:\WINDOWS\system32\cmd.exe" args="./k &quot;C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\resgen.exe&quot; main.resx main.resources" />
+    <record title="VC# 2008  Express 起動" action="RunProcess" command="F:\cpp\Neko\form\form_06\drawstring02\main.sln" />
+  </folder>
+  <folder title="実行" expand="true">
+    <record title="Console Output" action="RunProcess" command="C:\WINDOWS\system32\cmd.exe" args=",/k &quot;F:\cpp\Neko\form\form_06\drawstring02\main.exe&quot;" />
+    <record title="Windows Output" action="RunProcess" command="&quot;F:\cpp\Neko\form\form_06\drawstring02\main.exe&quot;" />
+    <record title="RunApp.wsf" action="RunProcess" command="C:\WINDOWS\system32\wscript.exe" args="//nologo &quot;F:\cpp\Neko\form\form_06\drawstring02\RunApp.wsf&quot;" />
+    <record title="WsScript" action="RunProcess" command="F:\Programs\csscript\csws.exe" args="F:\cpp\Neko\form\form_06\drawstring02\cs004_1.cs" />
+    <record title="RunWsScript.wsf" action="RunProcess" command="C:\WINDOWS\system32\Wscript.exe" args="//nologo F:\cpp\Neko\form\form_06\drawstring02\RunWsScript.wsf" />
+  </folder>
+  <folder title="Source" expand="true">
+    <record title="cs004_1.cs" action="Open" path="F:\cpp\Neko\form\form_06\drawstring02\cs004_1.cs" />
+  </folder>
+</root>

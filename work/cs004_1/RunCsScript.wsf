@@ -1,0 +1,21 @@
+<job id="Alert">
+<script language="VBScript">
+    Option Explicit
+
+	if FileExists("main.cs") then
+		CreateObject("WScript.Shell").Run "cmd.exe /k, F:\Programs\csscript\cscs.exe main.cs",1
+	end if
+
+	Function FolderExists(strFilePath)
+		Dim objFileSys
+		Set objFileSys = CreateObject("Scripting.FileSystemObject")
+		FolderExists = objFileSys.FolderExists(strFilePath)
+	End Function
+
+	Function FileExists(strFilePath)
+		Dim objFileSys
+		Set objFileSys = CreateObject("Scripting.FileSystemObject")
+		FileExists = objFileSys.FileExists(strFilePath)
+	End Function
+</script>
+</job>

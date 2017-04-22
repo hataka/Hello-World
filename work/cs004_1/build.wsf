@@ -1,0 +1,99 @@
+<job id="build">
+<script language="VBScript">
+    Option Explicit
+	Dim shell
+	Dim AppName
+	Dim compiler
+	Dim compilerXp
+	Dim compiler81
+	Dim currentDir
+	Dim objExecCmd
+	Dim objFSO          ' FileSystemObject
+	Dim strCopyFile     ' コピー対象ファイル
+	Dim strCopyFolder   ' コピー先フォルダ名
+
+	AppName = "cs004_1"
+	
+	'compilerXp = "C:\Program Files\Microsoft Visual Studio 9.0\Common7\IDE\VCSExpress.exe"
+	'compiler81 = "C:\Program Files (x86)\Microsoft Visual Studio 9.0\Common7\IDE\VCSExpress.exe"
+	'compiler81 = "C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\VCSExpress.exe"
+	'compiler81 = "C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\VCSExpress.exe"
+	
+	'if FileExists(compilerXp) then
+	'	compiler = compilerXp
+	'end if
+	'if FileExists(compiler81) then
+	'	compiler = compiler81
+	'end if
+
+	compiler = "C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\devenv.exe"
+	currentDir = Replace(WScript.ScriptFullName, WScript.ScriptName, "")
+	strCopyFile = currentDir & "bin" & "\Release\" & AppName & ".exe"
+	strCopyFolder = currentDir
+
+	Set shell = CreateObject("WScript.Shell")
+	Set objFSO = WScript.CreateObject("Scripting.FileSystemObject")
+
+	shell.CurrentDirectory = currentDir
+
+	if FileExists(AppName & ".csproj") then
+    	Set objExecCmd = shell.Exec(compiler & " " & AppName & ".csproj /rebuild ")
+         Do While objExecCmd.Status = 0
+            ' １秒待ってみる
+            WScript.Sleep(1000)
+        Loop
+	end if
+
+   ' ファイルコピー
+	if FileExists(strCopyFile) then
+     objFSO.CopyFile strCopyFile, strCopyFolder, True
+	end if
+
+   ' ファイル削除
+    'objFSO.DeleteFolder currentDir & "bin", True
+   	'objFSO.DeleteFolder currentDir & "obj", True
+
+	Set objFSO = Nothing
+
+	Function FolderExists(strFilePath)
+		Dim objFileSys
+		Set objFileSys = CreateObject("Scripting.FileSystemObject")
+		FolderExists = objFileSys.FolderExists(strFilePath)
+	End Function
+
+	Function FileExists(strFilePath)
+		Dim objFileSys
+		Set objFileSys = CreateObject("Scripting.FileSystemObject")
+		FileExists = objFileSys.FileExists(strFilePath)
+	End Function
+
+Function GetOSVersion()
+
+	' XP ならば 5.1 と返ります
+
+	Dim strComputer
+	Dim Wmi 
+	Dim colTarget 
+	Dim strWork 
+	Dim objRow
+	Dim aData
+
+	strComputer = "."
+	Set Wmi = GetObject("winmgmts:" _
+	    & "{impersonationLevel=impersonate}!\\" & strComputer & "\root\cimv2")
+	
+	Set colTarget = Wmi.ExecQuery( "select Version from Win32_OperatingSystem" )
+	For Each objRow in colTarget
+		strWork = objRow.Version
+	Next
+
+	aData = Split( strWork, "." )
+	strWork = aData(0) & "." & aData(1)
+
+	GetOSVersion = CDbl( strWork )
+
+End Function	
+	
+	
+</script>
+</job>
