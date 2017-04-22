@@ -1,0 +1,725 @@
+<?xml version="1.0"  encoding="UTF-8"?>
+<project name="EmbedAnt" default="usage" basedir=".">
+	<description>Embed Code and Copy Temporary Dir and build  with apache ant.</description>
+	<property name="appdata.dir" location="F:/ant/appdata"/>
+	<property name="config.dir" value="${appdata.dir}/config" />
+	
+	<import file="${config.dir}/properties.xml" />
+	<!-- import file="${config.dir}/jnlp.xml" /-->
+
+	<!-- =================================================================== -->
+	<!-- properties                                     -->
+	<!-- =================================================================== -->
+	<property environment="env" />
+	<dirname property="ant.file.dir" file="${ant.file}"/>
+	<property name="appname" value="${ant.project.name}"/>
+	<property name="target" value="${appname}"/>
+	<property name="exe" value="${target}.exe"/>
+	<property name="web.dir" value="${web.server.root}/f/codingground/java/Narshorn/"/> 
+	<property name="src.name" value="${target}.cs"/>
+	<property name="src.path" value="${basedir}/${src.name}"/>
+	<property name="src.ext" value="cs"/>
+	<property name="src.body" value="${target}"/>
+	<property name="src.dir" value="${basedir}"/>
+
+	<property name="working.dir" value="F:\codingground\java\code-sjavap2\practices\practice02-02"/>
+	<property name="web.document.root" value="${sdk.documentRoot}"/>
+	<property name="web.server.root" value="${sdk.serverRoot}"/>
+
+	<property name="sdk.path" value="${env.VS100COMNTOOLS}..\IDE\VCSExpress.exe"/>
+	<basename property="sdk.name" file="${sdk.path}"/>
+	<property name="sdk.version" value="10.0"/>
+	<property name="sdk.compiler" value="${sdk.path}" />
+	<property name="sdk.net.version" value="3.5"/>
+
+	<property name="fd.CurPath" value="${env.fd.CurPath}" />
+
+	<property name="phpcode"><![CDATA["
+			echo('hello World!');
+	"]]></property>
+
+	<property name="hello.html"><![CDATA[
+			<center><font color="red"><h1>こんにちわ hello World!</h1></font></center>
+	]]></property>
+ 
+	<loadfile property="buildfile.code" 
+						srcFile="${ant.file}" encoding="utf-8" />
+
+<!--	
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+		<classpath>
+			<pathelement location="F:\ant\apache-ant-1.8.3\lib\ant-contrib-0.3.jar"/>
+		</classpath>
+	</taskdef>
+	<propertyregex property="pack.name"
+              input="package.ABC.name"
+              regexp="package\.([^\.]*)\.name"
+              select="\1"
+              casesensitive="false" />
+-->
+	<!-- =================================================================== -->
+  <!-- condition definition                                     -->
+  <!-- =================================================================== -->
+	<available file="${basedir}/${exe}" property="have.exe" />
+	<available file="${sln}" property="have.sln" />
+	<available file="${basedir}/build.bat" property="build.bat" />
+	<available file="${basedir}/RunApp.wsf" property="RunApp.wsf" />
+	<available file="${basedir}/${target}.ppr" property="${target}.ppr" />
+	<available file="${basedir}/Sakura_MultiOpen.wsf" property="Sakura_MultiOpen.wsf" />
+	<available file="${basedir}/RunWsScript.wsf" property="RunWsScript.wsf" />
+	<available file="${basedir}/${target}.fdp" property="${target}.fdp" />
+  <condition property="is_windows_XP">
+        <os name="Windows XP"/>
+  </condition>
+  <!-- =================================================================== -->
+  <!-- initialization                                     -->
+  <!-- =================================================================== -->
+	<target name="init">
+		<script language="javascript"> <![CDATA[
+			//importPackage(java.io);
+			var File = java.io.File;
+			eval(''+project.getProperty("common_lib"));
+ 
+			var working_dir = project.getProperty("working.dir");
+			var document_root = project.getProperty("web.document.root");
+			var server_root = project.getProperty("web.server.root");
+			if(!file_exists(""+working_dir)){
+				working_dir = project.getProperty("ant.file.dir");
+			}
+			var site_dir = server_root + working_dir.replaceAll(document_root, "");
+			site_dir = site_dir.replace(/\\/g,"/");
+			project.setProperty("web.dir", site_dir);
+			var src_path = project.getProperty("src.path");
+			if(!file_exists(""+src_path)){
+				src_path = working_dir + "\\" + project.getProperty("src");
+			}
+			project.setProperty("src.path", src_path);
+			//list_environment();
+		]]></script>
+		<!--antcall target="echo-properties" / -->
+		<echo message="sit.dir = ${web.dir}" />
+	</target>
+
+	<target name="rhino-swt">
+	<script language="javascript"><![CDATA[
+		try{
+			load("nashorn:mozilla_compat.js");
+		}catch(e){}
+		importPackage(org.eclipse.swt);
+		importPackage(org.eclipse.swt.widgets);
+		importPackage(org.eclipse.swt.layout);
+		importPackage(org.eclipse.swt.graphics);
+ 
+		function newButton(type) {
+			obj = new Button(composite, eval(type));
+			obj.setText(type);
+			return obj;
+		}
+ 
+		function newLabel(img, text) {
+			obj = new Label(composite, SWT.NONE);
+			if(img != null) obj.setImage(img);
+			if(text != null) obj.setText(text);
+			obj;
+		}
+ 
+		function newItem(num, text) {
+			obj = new ExpandItem (bar, SWT.NONE, num);
+			obj.setText(text);
+			obj.setHeight(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
+			obj.setControl(composite);
+			return obj;
+		}
+ 
+		display =new Display();
+		shell = new Shell(display);
+
+		shell.setLayout(new FillLayout());
+		shell.setText("ExpandBar Example");
+ 
+		bar = new ExpandBar(shell, SWT.V_SCROLL);		
+		// First item
+		composite = new Composite (bar, SWT.NONE);
+		layout = new GridLayout ();
+		layout.marginLeft = layout.marginTop = layout.marginRight = layout.marginBottom = 10;
+		layout.verticalSpacing = 10;
+		composite.setLayout(layout);
+ 
+		newButton("SWT.PUSH");
+		newButton("SWT.RADIO");
+		newButton("SWT.CHECK");
+		button = newButton("SWT.TOGGLE");
+		button.setText("This is a toggle");
+		newItem(0, "What is your favorite button");
+	
+		// Second item
+		composite = new Composite (bar, SWT.NONE);
+		layout = new GridLayout (2, false);
+		layout.marginLeft = layout.marginTop = layout.marginRight = layout.marginBottom = 10;
+		layout.verticalSpacing = 10;
+		composite.setLayout(layout);
+ 
+		newLabel(display.getSystemImage(SWT.ICON_ERROR), null);	
+		newLabel(null, "SWT.ICON_ERROR");
+		newLabel(display.getSystemImage(SWT.ICON_INFORMATION), null);
+		newLabel(null, "SWT.ICON_INFORMATION");
+		newLabel(display.getSystemImage(SWT.ICON_WARNING), null);
+		newLabel(null, "SWT.ICON_WARNING");
+		newLabel(display.getSystemImage(SWT.ICON_QUESTION), null);
+		newLabel(null, "SWT.ICON_QUESTION");
+		newItem(1, "What is your favorite icon").setExpanded(true);
+		
+		// Third item
+		composite = new Composite (bar, SWT.NONE);
+		layout = new GridLayout (2, true);
+		layout.marginLeft = layout.marginTop = layout.marginRight = layout.marginBottom = 10;
+		layout.verticalSpacing = 10;
+		composite.setLayout(layout);
+		newLabel(null, "Scale");
+		new Scale (composite, SWT.NONE);
+		newLabel(null, "Spinner");	
+		new Spinner (composite, SWT.BORDER);
+		newLabel(null, "Slider");	
+		new Slider (composite, SWT.NONE);
+		newItem(2, "What is your favorite range widget");
+ 
+		bar.setSpacing(8);
+ 
+		shell.setSize(400, 350);
+		shell.open ();
+		while (!shell.isDisposed ()) {
+			if (!display.readAndDispatch ()) display.sleep ();
+		}
+		display.dispose ();
+		]]></script>
+	</target>
+
+  <!-- =================================================================== -->
+  <!-- execution task definitions                                     -->
+  <!-- =================================================================== -->
+<!--
+  <target name="build" depends="init">
+		<!- -	<exec executable="${basedir}/build.bat" /> - ->
+		<!- - description>- compiles the source code (default)</description - ->
+		<exec executable="cmd" spawn="false">
+		  <arg value="/k" />
+	  	<arg value="${sdk.compiler}"/>
+	  	<arg value="${csproj}" />
+	  	<arg value="/rebuild" />
+		</exec>
+	<!- - 	<available file="${basedir}/bin/Release/${exe}" property="have.release" /> 	- ->
+		<copy file="${basedir}/bin/Release/${exe}" todir="${basedir}" failonerror="false" />
+		<copy file="${basedir}/bin/Debug/${exe}" todir="${basedir}" failonerror="false" />
+		<copy todir="${basedir}" failonerror="false">
+			<fileset dir="${basedir}/obj/x86/Release" includes="*.resources" excludes=""/>
+			<fileset dir="${basedir}/obj/x86/Debug" includes="*.resources" excludes=""/>
+		</copy>	
+  </target>
+
+  <target name="run" if="have.exe">
+		<exec executable="${basedir}/${exe}" />
+  </target>
+
+  <target name="VCSExpress" if="have.sln">
+	<exec executable="${sdk.compiler}" spawn="true" >
+	  <arg value="${sln}" />
+	</exec>
+  </target>
+
+  <target name="runScript">
+	<exec executable="${csscript}" >
+	  <arg value="${basedir}/${src}" />
+	</exec>
+  </target>
+
+  <target name="pspad" if="${target}.ppr">
+	<exec executable="F:\Programs\PSPad editor\PSPad.exe"  spawn="true">
+	  <arg value="${basedir}/${target}.ppr" />
+	</exec>
+  </target>
+
+  <target name="fd" if="${target}.fdp">
+	<exec executable="F:\Programs\FlashDevelop\FlashDevelop.exe" spawn="true">
+	  <arg value="-reuse" />
+	  <arg value="${basedir}/${target}.fdp" />
+	</exec>
+  </target>
+-->
+  <target name="open-curFile-in-fd" if="${target}.fdp">
+	<exec executable="F:\Programs\FlashDevelop\FlashDevelop.exe" spawn="true">
+	  <arg value="-reuse" />
+	  <arg value="${ant.file.dir}/${appname}.cs" />
+	</exec>
+  </target>
+
+<!--
+  <target name="sakura" if="Sakura_MultiOpen.wsf">
+	<exec executable="cmd.exe" spawn="true">
+	  <arg value="/c" />
+	  <arg value="wscript.exe" />
+	  <arg value="//nologo" />
+	  <arg value="${basedir}/Sakura_MultiOpen.wsf" />
+	</exec>
+  </target>
+
+  <target name="runWsScript" if="RunWsScript.wsf">
+	<exec executable="cmd.exe" spawn="true">
+	  <arg value="/c" />
+	  <arg value="wscript.exe" />
+	  <arg value="//nologo" />
+	  <arg value="${basedir}/RunWsScript.wsf" />
+	</exec>
+  </target>
+
+  <target name="runbat" if="build.bat">
+	<exec executable="cmd.exe" spawn="true">
+	  <arg value="/c" />
+	  <arg value="build.bat" />
+	</exec>
+  </target>
+-->
+
+  <target name="open-appdata-folder">
+		<exec executable="explorer.exe" spawn="true">
+			<arg value="${appdata.dir}" />
+		</exec>
+  </target>
+<!--
+  <target name="runapp" if="RunApp.wsf">
+	<exec executable="cmd.exe" spawn="true">
+	  <arg value="/c" />
+	  <arg value="wscript.exe" />
+	  <arg value="//nologo" />
+	  <arg value="${basedir}/RunApp.wsf" />
+	</exec>
+  </target>
+  
+  <target name="clean">
+   <!- - http://www.ne.jp/asahi/hishidama/home/tech/ant/tag/delete.html - ->
+	<delete dir="bin" includeEmptyDirs="true" failonerror="false" />
+	<delete dir="obj/Debug" includeEmptyDirs="true" failonerror="false" />
+	<delete dir="obj/Release" includeEmptyDirs="true" failonerror="false" />
+	<delete dir="Properties" includeEmptyDirs="true" failonerror="false"/>
+	<delete>
+	  <fileset dir="." includes="*.user"/>
+	  <fileset dir="." includes="*.suo"/>
+	  <fileset dir="." includes="*.pdb" />
+	  <fileset dir="." includes="*.vshost.*" />
+	</delete>
+  </target>
+-->
+
+  <target name="hello-Nashorn">
+	<script language="javascript"><![CDATA[
+		print("こんにちは, Nashorn!");
+		var currentDir = new java.io.File('.'),
+    allFiles = currentDir.list();
+		print(currentDir.getCanonicalPath());
+		for (var i = 0; i < allFiles.length; i++) {
+			print(allFiles[i]);
+		}
+	]]></script>
+</target>
+<!--
+	<target name="clear" >
+	<delete dir="bin" includeEmptyDirs="true" failonerror="false" />
+	<!- - delete dir="obj" includeEmptyDirs="true" failonerror="false" / - ->
+	<delete dir="obj/Debug" includeEmptyDirs="true" failonerror="false" />
+	<delete dir="obj/Release" includeEmptyDirs="true" failonerror="false" />
+	<delete dir="doxygen" includeEmptyDirs="true" failonerror="false" />
+	<delete dir="Properties" includeEmptyDirs="true" failonerror="false"/>
+	<delete>
+	  <fileset dir="." includes="*.user"/>
+	  <fileset dir="." includes="*.suo"/>
+	  <fileset dir="." includes="*.exe"/>
+	  <fileset dir="." includes="*.resources" />
+	  <fileset dir="." includes="*.vshost.*" />
+	  <fileset dir="." includes="*.pdb" />
+<!- -
+	  <fileset dir="." includes="*.class"/>
+	  <fileset dir="." includes="*.swf"/>
+- ->
+	</delete>
+  </target>
+-->
+
+  <target name="sslib211.exe">
+    <exec executable="F:\cpp\sslib\Debug\sslib211.exe" >
+    </exec>
+  </target>
+
+  <target name="sslib212.exe">
+    <exec executable="F:\cpp\sslib\Debug\sslib212.exe" outputproperty="output" >
+    </exec>
+		<echo message="${output}" />
+	</target>
+
+  <target name="sslib213.pnp" >
+    <exec executable="php" outputproperty="output" >
+      <arg value="-f" />
+      <arg value="f:\php1\sslib\sslib213.php" />
+    </exec>
+		<echo message="${output}" />
+	</target>
+
+  <target name="sslib222.php" >
+    <php code="f:/php1/sslib/sslib222.php" property="aaa" />
+		<echo message="${aaa}" />
+	</target>
+
+	<target name="php-test">
+    <exec executable="${sdk.php}" outputproperty="output">
+      <arg value="-r" />
+      <arg value="${phpcode}" />
+    </exec>
+		<echo message="${output}" />
+	</target>
+
+	<target name="MessageDialog">
+		<script language="javascript"><![CDATA[
+    	//importPackage(javax.swing);
+    	var JOptionPane = javax.swing.JOptionPane;
+    	var optionPane = JOptionPane.showInputDialog( 'Speed in miles per hour?', '10' );
+    	var mph = parseFloat(optionPane);
+    	var kph = 1.621 * mph;
+    	JOptionPane.showMessageDialog( null, 'KPH = ' + kph );
+		]]></script>
+	</target>
+
+	<target name="ifjava7" depends="javaCheck" if="isJava7">
+		<echo message="Hello, World!" />
+	</target>
+
+	<target name="javaCheck">
+		<echo message="ant.java.version=${ant.java.version}" />
+		<condition property="isJava7">
+			<equals arg1="${ant.java.version}" arg2="1.7" />
+		</condition>
+	</target>
+	
+	<target name="input">
+	 <input message="Press Return key to continue..."/>
+	</target>	
+	<!--
+	<target name="MessageDialog2">
+		
+		<script language="javascript"><![CDATA[
+			//importPackage(javax.swing);
+			//var JOptionPane = javax.swing.JOptionPane;
+			//JOptionPane.showMessageDialog("Title","I am alert menu!");
+			//importPackage(java.lang);           
+			//java.lang.alert("I am alert menu!");
+		]]></script>
+	</target>
+-->
+<!--	
+	<target name="doxygen">
+	<exec executable="cmd.exe" >
+	  <arg value="/k" />
+	  <arg value="${doxygen}" />
+	  <arg value="${doxyfile}" />
+	</exec>
+  </target>
+-->
+	<target name="echo-properties">
+		<echoproperties>
+			<propertyset>
+				<propertyref prefix="os." />
+				<propertyref prefix="pack." />
+				<propertyref prefix="ant." />
+				<propertyref prefix="src." />
+				<propertyref prefix="web." />
+				<propertyref prefix="sdk." />
+				<propertyref prefix="lib." />
+				<propertyref prefix="fd." />
+			</propertyset>
+		</echoproperties>
+		<!--<antcall target="help" /> -->
+	</target>
+
+  <target name="help" depends="init">
+		<antcall target="echo-properties" />
+		<echo message=" available targets are:" />
+		<echo message="" />
+		<exec executable="cmd.exe" >
+	  	<arg value="/c" />
+	  	<arg value="ant" />
+	  	<arg value="-p" />
+		</exec>
+  </target>
+
+  <target name="BrowseExString" 
+		description="Click=PluginCommand,Tag=XMLTreeMenu.BrowseExString;こんにちわ hello World!">
+	<property name="hello.html"><![CDATA[
+		<center><font color="red"><h1>こんにちわ hello World!</h1></font></center>
+	]]></property>
+	</target>
+
+  <target name="BrowseEx-Google" 
+		description="Click=PluginCommand,Tag=XMLTreeMenu.BrowseEx;http://www.google.co.jp">
+	</target>
+
+  <target name="PluginCommand" description="Plugin">
+		<property name="command" value="script" />
+		<property name="language" value="php" />
+		<property name="code"><![CDATA[
+			echo("Hello php!");
+		]]></property>
+	</target>
+
+	<path id="list01-04.classpath">
+		<pathelement location="F:\JavaScript\rhino1_7R1\js.jar"/>
+	</path>
+
+	<target name="SwingApplication">
+		<java classname="org.mozilla.javascript.tools.shell.Main" failonerror="true" fork="yes">
+			<classpath refid="list01-04.classpath"/>
+			<arg value="F:\JavaScript\rhino1_7R1\examples\SwingApplication.js" />
+		</java>
+	</target>
+	
+	<target name="SwingApplication2">
+		<script language="javascript"><![CDATA[
+			//Load compatibility script
+			load("nashorn:mozilla_compat.js");
+			// Import the java.awt package
+			importPackage(java.awt);
+			// Import the java.awt.Frame class
+			importClass(java.awt.Frame);
+			// Create a new Frame object
+			var frame = new java.awt.Frame("hello");
+   		frame.addWindowListener(function(event, methodName) {
+				if (methodName == "windowClosing") {     
+					java.lang.System.exit(0);
+				}
+    	});
+			// Call the setVisible() method
+			frame.setVisible(true);
+			// Access a JavaBean property
+			print(frame.title);
+		]]></script>
+	</target>
+	
+	<!--
+  <target name="RunCommand4">
+		<description="Click=PluginCommand,Tag=XMLTreeMenu.BrowseExString;こんにちわ hello World!"/>
+	</target> 
+	-->
+	<!-- =================================================================== -->
+  <!-- Help on usage													   -->
+  <!-- =================================================================== -->
+  <target name="usage">
+	<echo message="" />
+	<echo message="" />
+	<echo message="${name} Build file" />
+	<echo message="java version ${ant.java.version}" />
+	<echo message="-------------------------------------------------------------" />
+	<echo message="" />
+	<echo message=" available targets are:" />
+	<echo message="" />
+	<echo message="   build	 - compiles the source code (default)" />
+	<echo message="   run	   - execute the exsample" />
+	<echo message="   runscript - run script of the exsample" />
+	<!--
+	<echo message="   package   - generates the ${name}.jar file" />
+	-->
+	<echo message="   doxygen   - generates the doxygen documentation" />
+	<echo message="   clean	 - cleans up the directory" />
+	<echo message="   clear	 - delete all build files" />
+	<echo message="" />
+	<echo message=" See the comments inside the build.xml file for more details." />
+	<echo message="-------------------------------------------------------------" />
+	<echo message="" />
+	<echo message="" />
+  </target>
+  
+  <!-- =================================================================== -->
+  <!-- Prepares the source code                                            -->
+  <!--
+	定義したプロパティーを使用したい箇所では、「${プロパティー名}」とする。 （「${」があって「}」が無いとエラーになる）
+  「$」の文字そのものを（プロパティーの開始でなく）使いたい場合は、「$」の直後に
+	「{」が無ければ問題ない。または「$$」とすれば常に「$」になる。[2009-02-06]
+  既にセットされているプロパティー名でさらにセット（上書き）しようとしても、上書きできず、以前の値がそのまま残る。[2009-03-17]
+  （デバッグモードで実行すると、「Override ignored for property "プロパティー名"」というメッセージが出力される）
+  一度セットされたプロパティーを削除（消去）することは出来ない。[2009-03-17]
+	-->
+	<!-- =================================================================== -->
+	<property name="template.dir" value="F:\ant\appdata\Templates\Form01"/>
+	<property name="target.dir" value="F:\VCSharp\FormsApplication03"/>
+	<property name="target.name" value="FormsApplication03"/>
+
+	<target name="VCSForms_project">
+		<MakeProject	tmp.dir="${template.dir}" tgt.dir="${target.dir}"
+		 tgt.name ="${target.name}" tgt.ext="cs"/>
+	</target>
+
+	<target name="exec_ant_in_tempdir">
+		<!--echo message="${env.TEMP}"/-->
+ 		<echo message="${buildfile.code}"  
+			file="${env.TEMP}\build.xml" encoding="UTF-8"/>
+		<ant antfile="${env.TEMP}\build.xml" dir="${ant.file.dir}" target="sslib211.exe"/>
+	</target>
+
+	<target name="get from url">
+ 		<get 
+			src="https://raw.githubusercontent.com/hataka/hataka.github.io/master/swt.snippets8/Snippet003/Snippet3.java" 
+			dest="${env.TEMP}\Main.java"/>
+		<loadfile property="javacode" 
+						srcFile="${env.TEMP}\Main.java" encoding="utf-8" />
+		<echo message="${javacode}" />
+	</target>
+
+	<target name="download_run">
+ 		<get 
+			src="http://kahata.travel.coocan.jp//Music/CHRISTMAS_SET/CHRISTMAS_SET-Singphonic_Christmas.wma"
+    	 dest="${env.TEMP}\Main.wma"/>
+    <exec executable="explorer.exe">
+      <arg value="${env.TEMP}\Main.wma" />
+    </exec>
+	</target>
+	
+<!-- define ant-git-tasks -->
+<!-- enable below lines after downloading jars.
+<taskdef uri="antlib:com.rimerosolutions.ant.git" resource="com/rimerosolutions/ant/git/jgit-ant-lib.xml">
+	<classpath>
+			<fileset dir="lib" includes="*.jar" />
+		</classpath>
+</taskdef>
+
+	<target name="sampleGit">
+		<git:settings refId="gitSettingsReference" 
+									username="hataka" 
+									password="jahata1015" 
+									name="Kazuhiko Hata" email="kazuhiko.hata@nifty.com" />
+		
+		<mkdir dir="./Flashdevelop5.2.1" />
+		<git:git directory="./Flashdevelop5.2.1" settingsRef="gitSettingsReference">
+			<git:clone uri="https://github.com/fdorg/flashdevelop.git" />
+		</git:git>
+	</target>
+-->
+	
+	<!--
+  <fileset id="ftp.upload.fileset" dir="${build.dir}">
+    <include name="${name}.*" />
+    <!- include name="screenshot*.*" / ->
+    <include name="*.jar" />
+    <include name="src.zip" />
+    <include name="index.html" />
+  </fileset>
+
+  <target name="ftp" depends="dist">
+    <property name="ftp.userid" value="${env.FTP_USERID}" />
+    <property name="ftp.server" value="${env.FTP_SERVER}" />
+    <property name="ftp.remotedir" value="/public_html/swing/${jnlp.name}" />
+    <input message="Enter Password:" addproperty="ftp.password">
+      <handler classname="org.apache.tools.ant.input.SecureInputHandler" />
+    </input>
+    <ftp action="mkdir"
+         server="${ftp.server}" remotedir="${ftp.remotedir}"
+         userid="${ftp.userid}" password="${ftp.password}"
+         passive="yes" verbose="yes" />
+    <ftp server="${ftp.server}" remotedir="${ftp.remotedir}"
+         userid="${ftp.userid}" password="${ftp.password}"
+         passive="yes" verbose="yes">
+      <fileset refid="ftp.upload.fileset" />
+    </ftp>
+  </target>
+-->
+</project>
+<!-- mkdir dir="${build.src}" / -->
+ <!--
+    <filter token="title"    value="${jnlp.title}" />
+    <filter token="homepage" value="${jnlp.homepage}" />
+     <copy todir="${build.src}" filtering="yes"
+          encoding="${compile.encoding}"
+          outputencoding="${compile.encoding}">
+      <fileset dir="${src.dir}" includes="**/*.java" />
+    </copy>
+    <copy todir="${build.src}">
+      <fileset dir="${src.dir}" excludes="**/*.java, **/*.bak" />
+    </copy>
+-->
+    <!--native2ascii encoding="UTF-8" src="${src.dir}" dest="${build.dest}" includes="**/*.properties.utf8" ext="" /-->
+<!--
+    <copy todir="${build.dest}">
+      <fileset dir="${src.dir}" excludes="**/*.java, **/*.bak, **/*.utf8" />
+    </copy>
+-->
+
+<!--
+	<macrodef name="MakeProject">
+ 		<attribute name="tmp.dir" default="F:\ant\appdata\Templates\Form01"/>
+ 		<attribute name="tgt.dir" default="F:\VCSharp\FormsApplication03"/>
+ 		<attribute name="tgt.name" default="FormsApplication03"/>
+  	<sequential>
+ 			<fileset id="template.projectfiles" dir="@{tmp.dir}">
+  			<include name="TARGET.*" />
+  		</fileset>
+		 	<fileset id="template.toolsfiles" dir="@{tmp.dir}">
+  			<include name="*.*" />
+				<exclude name="TARGET.*" />
+  		</fileset>
+			<filterset id="template.filter" begintoken="%%" endtoken="%%">
+  			<filter token="TARGET" value="${target.name}"/>
+  			<filter token="TIMESTAMP" value="${timestamp}"/>
+  			<filter token="FILENAME" value="${target.name}.cs"/>
+  			<filter token="FILEDIR" value="${target.dir}"/>
+  			<filter token="DIR_NAME" value="DIR_NAME"/>
+  			<filter token="PATH" value="${target.dir}/${target.name}.cs"/>
+  			<filter token="LOCALDIR" value="LOCALDIR"/>
+  			<filter token="LOCALURL" value="LOCALURL"/>
+			</filterset>
+			<copy toDir="@{tgt.dir}" overwrite="false" preservelastmodified="false" filtering="true" encoding="UTF-8">
+			<fileset refid="template.projectfiles" />
+			<filterset refid="template.filter" />
+			<mapper type="glob" from="TARGET.*" to="@{tgt.name}.*"/>
+		</copy>
+		<copy toDir="@{tgt.dir}" overwrite="false" preservelastmodified="false" filtering="true" encoding="UTF-8">
+			<fileset refid="template.toolsfiles" />
+			<filterset refid="template.filter" />
+		</copy>
+   </sequential>
+	</macrodef>
+
+
+  <target name="VCSForms_project">  
+ 	<fileset id="template.projectfiles" dir="${template.dir}">
+  	<include name="TARGET.*" />
+		<!- <exclude name="*.txt" /> ->
+  </fileset>
+
+ 	<fileset id="template.toolsfiles" dir="${template.dir}">
+  	<include name="*.*" />
+		<exclude name="TARGET.*" />
+  </fileset>
+
+	<filterset id="template.filter" begintoken="%%" endtoken="%%">
+  	<filter token="TARGET" value="${target.name}"/>
+  	<filter token="TIMESTAMP" value="${timestamp}"/>
+  	<filter token="FILENAME" value="${target.name}.cs"/>
+  	<filter token="FILEDIR" value="${target.dir}"/>
+  	<filter token="DIR_NAME" value="DIR_NAME"/>
+  	<filter token="PATH" value="${target.dir}/${target.name}.cs"/>
+  	<filter token="LOCALDIR" value="LOCALDIR"/>
+  	<filter token="LOCALURL" value="LOCALURL"/>
+	</filterset>
+
+
+	<!- http://qiita.com/t-suwa/items/7b3b4d359923934f619d
+		<local name="deploy.host"/>
+		<property name="deploy.host" value="vwebdev02"/>
+		<echo>${deploy.host}</echo>
+		->
+		<copy toDir="${target.dir}" overwrite="false" preservelastmodified="false" filtering="true" encoding="UTF-8">
+			<fileset refid="template.projectfiles" />
+			<filterset refid="template.filter" />
+			<mapper type="glob" from="TARGET.*" to="${target.name}.*"/>
+		</copy>
+		<copy toDir="${target.dir}" overwrite="false" preservelastmodified="false" filtering="true" encoding="UTF-8">
+			<fileset refid="template.toolsfiles" />
+			<filterset refid="template.filter" />
+		</copy>
+  </target>
+
+-->
