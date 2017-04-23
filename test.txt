@@ -1,3 +1,7 @@
+===========================================
+2017-04-23 GITGUI 試験
+===========================================
+
     public static void createAndShowGUI() {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
