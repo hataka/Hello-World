@@ -10,6 +10,9 @@
 <img src="https://drive.google.com/uc?export=view&id=0Bye2xdoobG-JcXhFU29GSG94eGpHSHZUWmZHRUljTUpyeVpv" width=320 height=240 />
 
 # Link
+* [Git - リモートでの作業](https://git-scm.com/book/ja/v1/Git-%E3%81%AE%E5%9F%BA%E6%9C%AC-%E3%83%AA%E3%83%A2%E3%83%BC%E3%83%88%E3%81%A7%E3%81%AE%E4%BD%9C%E6%A5%AD)
+* [Git - Book](https://git-scm.com/book/ja/v1/)
+* [git(1)](file:///C:/Program%20Files/Git/mingw64/share/doc/git-doc/index.html)
 * [GitHub Help](https://help.github.com/categories/writing-on-github/)
 * [README.mdファイル。マークダウン記法まとめ | codechord](http://codechord.com/2012/01/readme-markdown/)
 * [hello-test](test/test.md)
