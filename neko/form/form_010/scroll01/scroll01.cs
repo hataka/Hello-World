@@ -11,9 +11,8 @@
  * To run: 
  * link: http://www.kumei.ne.jp/c_lang/
  * link: http://www.kumei.ne.jp/c_lang/form/form_10.htm
- * description: 
- *
- *================================================================*/
+ * description: 試験編集 
+  *================================================================*/
 // scroll01.cs
 
 using System;
