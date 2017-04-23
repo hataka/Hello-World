@@ -2,23 +2,23 @@
 2017-04-23 GITGUI 試験
 ===========================================
 
-    public static void createAndShowGUI() {
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            //setUIFont(new Font("Meiryo UI", Font.PLAIN, 18)); 
+	public static void createAndShowGUI() {
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			//setUIFont(new Font("Meiryo UI", Font.PLAIN, 18)); 
 						setUIFont (new javax.swing.plaf.FontUIResource("Meiryo UI", Font.PLAIN, 20));
-      } catch (ClassNotFoundException | InstantiationException
-               | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-            ex.printStackTrace();
-        }
-        JFrame frame = new JFrame("@title@");
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.getContentPane().add(new MainPanel());
-        frame.pack();
-        frame.setSize(1200,900);
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-    }
+	  } catch (ClassNotFoundException | InstantiationException
+			   | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+			ex.printStackTrace();
+		}
+		JFrame frame = new JFrame("@title@");
+		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		frame.getContentPane().add(new MainPanel());
+		frame.pack();
+		frame.setSize(1200,900);
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
+	}
 
 		/**
 	   * http://stackoverflow.com/questions/7434845/setting-the-default-font-of-swing-program
