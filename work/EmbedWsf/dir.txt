@@ -1,8 +1,0 @@
-dir.txt
-Embedphp.wsf
-EmbedScript.wsf
-EmbedWsf.fdp
-hello-csscript.wsf
-RunWsScript.wsf
-SwtSnippet1.wsf
-TemplateEmbedScript1.wsf
