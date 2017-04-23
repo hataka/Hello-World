@@ -1,0 +1,90 @@
+<HTML>
+<!--        form_52.htm        -->
+<!--        2007/01/20       -->
+<HEAD>
+<LINK REL=STYLESHEET HREF="../neko.css" TYPE="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>第５２章</TITLE>
+<base href='http://www.kumei.ne.jp/c_lang/form/'>
+<meta http-equiv='Content-Type'content='text/htm; charset=UTF-8'>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<CENTER>
+<H1>第５２章 ステータス・バーの基礎</H1>
+</CENTER>
+<HR>
+<IMG SRC="../img/my10x.gif" ALIGN="left">
+C#では、メイン・フォームにステータスバーをつけるのは簡単です。
+<P>
+<BR CLEAR="left"><BR>
+ステータス・バーを作るには、StatusBarクラスを利用します。このクラスの継承関係は次のようになっています。
+<PRE>
+System.Object 
+   System.MarshalByRefObject 
+     System.ComponentModel.Component 
+       System.Windows.Forms.Control 
+        System.Windows.Forms.StatusBar
+</PRE>
+この章で利用するメンバは、StatusBar.Textプロパティと、Control.Parentプロパティのみです。<P>
+TextプロパティはStausBarコントロールに関連づけられたテキストの設定、取得を行います。
+<PRE>
+public override string Text { get; set; }
+</PRE>
+Parentプロパティは、コントロールの親コンテナを取得、設定します。
+<PRE>
+public Control Parent { get; set; }
+</PRE>
+また、デフォルトではステータス・バーにサイズグリップがつきます。不要な場合はStatusBar.SizingGripプロパティで非表示にすることもできます。
+<PRE>
+public bool SizingGrip { get; set; }
+</PRE>
+では、簡単なサンプルプログラムを見てみましょう。
+<PRE>
+// status01.cs
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+class status01
+{
+    public static void Main()
+    {
+        MyForm mf = new MyForm();
+        Application.Run(mf);
+    }
+}
+
+class MyForm : Form
+{
+    public MyForm()
+    {
+        Text = "猫でもわかるC#プログラミング";
+        BackColor = SystemColors.Window;
+        StatusBar ms = new StatusBar();
+        ms.Parent = this;
+        ms.Text = "粂井康孝";
+    }
+}
+</PRE>
+実行結果は、次のようになります。<P>
+<IMG SRC="../img/form5201.gif" ALIGN="left">
+SizingGripを設定していないので、デフォルトで表示されています。
+<P>
+<BR CLEAR="left"><BR>
+<HR>
+[<A HREF="../index_form.html">C# フォーム Index</A>]
+[<A HREF="../index_cs.html">C# コンソール Index</A>]
+[<A HREF="../index.html">総合Index</A>]
+[<A HREF="form_51.htm">Previous Chapter</A>]
+[<A HREF="form_53.htm">Next Chapter</A>]
+<P>
+<ADDRESS>
+Update 20/Jan/2007 By Y.Kumei<BR>
+<FONT COLOR="#FF0000">
+当ホーム・ページの一部または全部を無断で複写、複製、
+転載あるいはコンピュータ等のファイルに保存することを禁じます。
+</FONT>
+</ADDRESS>
+</BODY>
+</HTML>

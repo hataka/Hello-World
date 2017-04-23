@@ -1,0 +1,123 @@
+<HTML>
+<!--        form_08.htm        -->
+<!--        2006/10/23       -->
+<HEAD>
+<LINK REL=STYLESHEET HREF="../neko.css" TYPE="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>第８章 </TITLE>
+<base href='http://www.kumei.ne.jp/c_lang/form/'>
+<meta http-equiv='Content-Type'content='text/htm; charset=UTF-8'>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<CENTER>
+<H1>
+第８章 Application.Runメソッド
+</H1>
+</CENTER>
+<HR>
+<IMG SRC="../img/my10x.gif" ALIGN="left">
+今まで、Application.Runメソッドをおまじないのように使ってきました。
+<P>
+<BR CLEAR="left"><BR>
+まず、Applicationクラスですが、これはSystem.Windows.Forms名前空間で定義されています。<P>
+そして、メンバはすべてstaticです。継承はできません。<P>
+Application.Runメソッドは３つのオーバーロードバージョンがあります。<P>
+今まで使ってきたのは
+<PRE>
+public static void Run (
+	Form mainForm
+)
+</PRE>
+これは、現在のスレッドでメッセージループの実行を開始します。また、指定のフォームを表示します。<P>
+メッセージループはイベントの監視を行います。GUIのプログラムでは、イベントの監視が必須です。(<A HREF="../loop.htm">ここ</A>も参照してみてください)<P>
+これに対して、引数無しバージョンは、フォームなしでメッセージループを開始します。<P>
+３つめのバージョンは、初めのうちはほとんど使うことが無いと思われます。<P>
+Runメソッドは逆にメッセージループを終了してフォームを閉じるのは
+<PRE>
+public static void Exit ()
+</PRE>
+です。<P>
+Applicationクラスを、のぞいたついでにこのクラスのプロパティを２，３見てみましょう。
+<PRE>
+public static CultureInfo CurrentCulture { get; set; }
+</PRE>
+現在のスレッドのカルチャ情報を取得・設定します。CultureInfoクラスについてはコンソール編<A HREF="../cs/cs_54.htm">第５４章</A>に少しだけ解説が載っています。<P>
+Application.ExecutablePathは、アプリケーションを開始したパスをファイル名付きで取得します。<P>
+これに対して、StartupPathは、ファイル名を含みません。<P>
+Application.CompanyNameは、その名の通りアプリケーションに関連づけられた会社名を取得します。<P>
+今回は、あんまりたいしたことありませんでした。サンプルでも見てください。<P>
+このサンプルでは、クライアント領域をクリックするとプログラムが終了するようにしています。<P>
+コントロールがクリックされるとControl.MouseClickイベントが発生します。<P>
+このイベントを受信するには、Control.OnMouseClickメソッドをオーバーライドします。
+(注:MouseClicイベントや、OnMouseClickメソッドはC#2.0で追加されました。)
+<PRE>
+// application01.cs
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+class application01
+{
+    public static void Main()
+    {
+        MyForm mf = new MyForm();
+        Application.Run(mf);
+    }
+}
+
+class MyForm : Form
+{
+    public MyForm()
+    {
+        Text = "猫でもわかるプログラミング";
+        BackColor = SystemColors.Window;
+        Width = 790;
+        Height = 180;
+    }
+    protected override void OnPaint(PaintEventArgs e)
+    {
+        base.OnPaint(e);
+
+        Graphics g = e.Graphics;
+        String cul = Application.CurrentCulture.EnglishName;
+        String path = Application.ExecutablePath;
+        String start = Application.StartupPath;
+        String comp = Application.CompanyName;
+
+        Font font = new Font("ＭＳ ゴシック", 12);
+
+        g.DrawString(cul, font, Brushes.Black, 10F, 10F);
+        g.DrawString(path, font, Brushes.Black, 10F, 30F);
+        g.DrawString(start, font, Brushes.Black, 10F, 50F);
+        g.DrawString(comp, font, Brushes.Black, 10F, 70F);
+    }
+
+    protected override void OnMouseClick(MouseEventArgs e)
+    {
+        base.OnMouseClick(e);
+        Application.Exit();
+    }
+}
+</PRE>
+実行結果は次のようになります。<P>
+<IMG SRC="../img/form0801.gif" ALIGN="left">
+クライアント領域をクリックすると、プログラムが終了します。
+<P>
+<BR CLEAR="left"><BR>
+<HR>
+[<A HREF="../index_form.html">C# フォーム Index</A>]
+[<A HREF="../index_cs.html">C# コンソール Index</A>]
+[<A HREF="../index.html">総合Index</A>]
+[<A HREF="form_07.htm">Previous Chapter</A>]
+[<A HREF="form_09.htm">Next Chapter</A>]
+<P>
+<ADDRESS>
+Update 23/Oct/2006 By Y.Kumei<BR>
+<FONT COLOR="#FF0000">
+当ホーム・ページの一部または全部を無断で複写、複製、
+転載あるいはコンピュータ等のファイルに保存することを禁じます。
+</FONT>
+</ADDRESS>
+</BODY>
+</HTML>

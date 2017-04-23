@@ -1,0 +1,146 @@
+<HTML>
+<!--        form_02.htm        -->
+<!--        2006/10/17       -->
+<HEAD>
+<LINK REL=STYLESHEET HREF="../neko.css" TYPE="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>第２章 </TITLE>
+<base href='http://www.kumei.ne.jp/c_lang/form/'>
+<meta http-equiv='Content-Type'content='text/htm; charset=UTF-8'>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<CENTER>
+<H1>
+第２章 フォームにタイトルなどをつける 
+</H1>
+</CENTER>
+<HR>
+<IMG SRC="../img/my10x.gif" ALIGN="left">
+この章ではFormクラスについて、よく使うプロパティなどについて解説します。
+<P>
+<BR CLEAR="left"><BR>
+そもそも、FormクラスはObjectクラスを開始点として何代か継承されてきたクラスです。
+<PRE>
+System.Object
+ System.MarshalByRefObject
+  System.ComponentModel.Component
+   System.Windows.Forms.Control
+    System.Windows.Forms.ScrollableControl
+     System.Windows.Forms.ContainerControl
+      System.Windows.Forms.Form
+</PRE>
+Formクラスの持つ多数のメンバのうちかなりの部分はControlクラスから継承されてきています。
+<P>
+Formクラスのいくつかのプロパティを見てみましょう。
+<PRE>
+public override string Text { get; set; }
+</PRE>
+これは、Control.Textをオーバーライドします。Formクラスではタイトルバーに表示される文字列を取得、設定します。
+<PRE>
+public override Color BackColor { get; set; }
+</PRE>
+Control.BackColorをオーバーライドします。コントロールの背景色を取得または設定します。<P>
+ここで、Colorは構造体です。構造体について忘れてしまった人は、コンソール編<A HREF="../cs/cs_51.htm">第５１章</A>を参照してください。Color構造体のpublicプロパティは、Blueとか、Blackとか大文字で始まる色の名前で、読み出し専用です。<P>
+この他に、R,G,Bというプロパティがあります。それぞれこの構造体の赤、緑、青のコンポーネントの値を取得します。<P>
+では、タイトルバーににタイトルを設定して、背景色が黄色のフォームを作ってみましょう。
+<PRE>
+// formprop01.cs
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+class formprop01 : Form
+{
+    public static void Main()
+    {
+        formprop01 f1 = new formprop01();
+
+        Application.Run(f1);
+    }
+
+    // コンストラクタ
+    public formprop01()
+    {
+        Text = "猫でもわかるプログラミング";
+        BackColor = Color.Yellow;
+    }
+}
+</PRE>
+メンバにMainメソッドを有するformprop01クラスは、Formクラスから継承されています。
+コンストラクタformprop01を見てください。<P>
+自分自身のクラスのプロパティTextに「猫でもわかるプログラミング」を設定しています。また、BackColorプロパティにはColor.Yellow(黄色)を設定しています。<P>
+これで、タイトルバーに「猫でもわかるプログラミング」と表示され、背景色が黄色のフォームができるはずです。<P>
+<IMG SRC="../img/form0201.gif" ALIGN="left">
+<P>
+<BR CLEAR="left"><BR>
+では、同じ要領でMainメソッドを有しないクラスをFormから派生して同様のことをしてみましょう。
+<PRE>
+// formprop02.cs
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+class formprop02
+{
+    public static void Main()
+    {
+        MyForm mf = new MyForm();
+        Application.Run(mf);
+        
+    }
+}
+
+class MyForm : Form
+{
+    public MyForm()
+    {
+        Text = "猫でもわかるプログラミング";
+        BackColor = Color.Yellow;
+    }
+}
+</PRE>
+Mainメソッドを有さないMyFormクラスをFormクラスから派生しています。<P>
+このMyFormクラスのコンストラクタで、TextとBackColorプロパティを設定しています。<P>Mainメソッドでは、MyFormクラスのインスタンスを生成して、Application.Runメソッドに渡しています。<P>
+実行結果はformprop01.csの時と全く同じです。<P>
+では、次にFormを継承しないでFormクラスのインスタンスを作ってみましょう。
+<PRE>
+// formprop03.cs
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+class formprop03
+{
+    public static void Main()
+    {
+        Form myform = new Form();
+
+        myform.Text = "猫でもわかるプログラミング";
+        myform.BackColor = Color.Yellow;
+
+        Application.Run(myform);
+    }
+}
+</PRE>
+このプログラムの実行結果も、formprop01.csの時と同じです。<P>
+このように、簡単なプログラムであれば、この３つの方法のどれを使っても実現できます。<P>
+しかし、第３の方法では後に、ちょっと困ったことも起こるということを覚えておいてください。
+<HR>
+[<A HREF="../index_form.html">C# フォーム Index</A>]
+[<A HREF="../index_cs.html">C# コンソール Index</A>]
+[<A HREF="../index.html">総合Index</A>]
+[<A HREF="form_01.htm">Previous Chapter</A>]
+[<A HREF="form_03.htm">Next Chapter</A>]
+<P>
+<ADDRESS>
+Update 17/Oct/2006 By Y.Kumei<BR>
+<FONT COLOR="#FF0000">
+当ホーム・ページの一部または全部を無断で複写、複製、
+転載あるいはコンピュータ等のファイルに保存することを禁じます。
+</FONT>
+</ADDRESS>
+</BODY>
+</HTML>

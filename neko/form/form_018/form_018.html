@@ -1,0 +1,123 @@
+<HTML>
+<!--        form_18.htm        -->
+<!--        2006/11/02       -->
+<HEAD>
+<LINK REL=STYLESHEET HREF="../neko.css" TYPE="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>第１８章 </TITLE>
+<base href='http://www.kumei.ne.jp/c_lang/form/'>
+<meta http-equiv='Content-Type'content='text/htm; charset=UTF-8'>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<CENTER>
+<H1>第１８章 最も簡単なメニュー</H1>
+</CENTER>
+<HR>
+<IMG SRC="../img/my10x.gif" ALIGN="left">
+やはり、フォームにはメニューが無いと変ですね。
+<P>
+<BR CLEAR="left"><BR>
+今回は、最も簡単なメニューの作り方を紹介します。<P>
+メニューには、最初から「ファイル」とか「編集」などのように見えている部分があります。これをメインメニューといいます。そして、「ファイル」をクリックすると「上書き保存」などのメニューが現れてきます。これをサブメニューといいます。サブメニューからさらに下位ののサブメニューが出てくることもあります。<P>
+「ファイル」とか「編集」とか「上書き保存」などをメニュー項目といいます。<P>
+まずは、メニュー項目を作ります。これには、MenuItemクラスのコンストラクタを使うと簡単です。MenuItemクラスの継承関係は次のようになっています。
+<PRE>
+System.Object
+ System.MarshalByRefObject 
+  System.ComponentModel.Component
+    System.Windows.Forms.Menu
+     System.Windows.Forms.MenuItem
+</PRE>
+Menuクラスは抽象クラスです。抽象クラスについて忘れてしまった人は、コンソール編<A HREF="../cs/cs_44.htm">第４４章</A>を参照してください。<P>
+MenuItemクラスのコンストラクタは６つのオーバーロードバージョンがあります。<P>
+今回使用するバージョンは、次のようなものです。
+<PRE>
+public MenuItem (
+	string text,
+	EventHandler onClick
+)
+</PRE>
+textは、メニュー項目のテキストです。<P>
+onClickは、このメニュー項目のClickイベントを処理するイベントハンドラです。<P>
+では、「テスト(&T)」(&Tは、Tに下線が付き、Tキーを押すとこの項目をクリックしたのと同じ効果が得られます。)というテキストを持ったメニュー項目を作ってみましょう。
+<PRE>
+MenuItem miTest = new MenuItem("テスト(&T)",
+            new EventHandler(miTestClick));
+</PRE>
+こうすると、このメニュー項目がクリックされるとmiTestClickイベントハンドラが実行されます。<P>
+次に、フォームのMenuプロパティに、このメニュー項目を指定します。これには、MainMenuクラスのコンストラクタを使います。MainMenuクラスは、MenuItemクラスと同じ祖先を持ちます。<P>
+MainMenuクラスのコンストラクタには、３つのオーバーロードバージョンがありますが、今回使用するのは、次のようなものです。
+<PRE>
+public MainMenu (
+	MenuItem[] items
+)
+</PRE>
+itemsは、MainMenuに追加されるMenuItemオブジェクトの配列です。従って先ほど作ったメニュー項目を追加するには、
+<PRE>
+Menu = new MainMenu(new MenuItem[]{miTest});
+</PRE>
+とすれば、よいですね。ちなみにFormクラスのMenuプロパティは次のように定義されています。
+<PRE>
+public MainMenu Menu { get; set; }
+</PRE>
+では、サンプルを見てみましょう。
+<PRE>
+// menu01.cs
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+class menu01
+{
+    public static void Main()
+    {
+        MyClass mc = new MyClass();
+        Application.Run(mc);
+    }
+}
+
+class MyClass : Form
+{
+    public MyClass()
+    {
+        Text = "猫でもわかるプログラミング";
+        BackColor = SystemColors.Window;
+
+        MenuItem miTest = new MenuItem("テスト(&T)",
+            new EventHandler(miTestClick));
+        Menu = new MainMenu(new MenuItem[]{miTest});
+    }
+
+    void miTestClick(object sender, EventArgs e)
+    {
+        MessageBox.Show("テスト成功!", "猫でもわかるプログラミング",
+            MessageBoxButtons.OK, MessageBoxIcon.Information);
+    }
+}
+</PRE>
+実行結果は、次のようになります。<P>
+<IMG SRC="../img/form1801.gif" ALIGN="left">
+「テスト」メニュー項目をクリックすると、「テスト成功」というメッセージボックスが出現します。<P>
+<P>
+<BR CLEAR="left"><BR>
+<IMG SRC="../img/form1802.gif" ALIGN="left">
+左のようなメッセージボックスが出現したら成功です。
+<P>
+<BR CLEAR="left"><BR>
+<HR>
+[<A HREF="../index_form.html">C# フォーム Index</A>]
+[<A HREF="../index_cs.html">C# コンソール Index</A>]
+[<A HREF="../index.html">総合Index</A>]
+[<A HREF="form_17.htm">Previous Chapter</A>]
+[<A HREF="form_19.htm">Next Chapter</A>]
+<P>
+<ADDRESS>
+Update 02/Nov/2006 By Y.Kumei<BR>
+<FONT COLOR="#FF0000">
+当ホーム・ページの一部または全部を無断で複写、複製、
+転載あるいはコンピュータ等のファイルに保存することを禁じます。
+</FONT>
+</ADDRESS>
+</BODY>
+</HTML>

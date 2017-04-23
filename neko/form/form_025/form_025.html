@@ -1,0 +1,250 @@
+<HTML>
+<!--        form_25.htm        -->
+<!--        2006/11/09       -->
+<HEAD>
+<LINK REL=STYLESHEET HREF="../neko.css" TYPE="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>第２５章 </TITLE>
+<base href='http://www.kumei.ne.jp/c_lang/form/'>
+<meta http-equiv='Content-Type'content='text/htm; charset=UTF-8'>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<CENTER>
+<H1>第２５章 オーナードロー・メニュー</H1>
+</CENTER>
+<HR>
+<IMG SRC="../img/my10x.gif" ALIGN="left">
+この章では、オーナードローという手法を用いてメニュー項目にイメージを表示してみます。
+<P>
+<BR CLEAR="left"><BR>
+Win32APIによるプログラミングでは、オーナードローは結構面倒くさい部類に入っていました。しかし、C#では簡単です。<P>
+メニュー項目をオーナードローするには、
+<PRE>
+１．MenuItemオブジェクトのOwnerDrawプロパティをtrueに設定する。
+２．MeasureItemイベントの処理
+３．DrawItemイベントでの描画
+</PRE>
+たったこれだけです。<P>
+MeasureItemイベントを処理するには、これにMeasureItemEventHandlerデリゲートを関連づけます。
+<PRE>
+MeasureItem += new MeasureItemEventHandler(miCat_MeasureItem);
+</PRE>
+miCat_MeasureItem自作メソッドの第２引数にはMeasureItemEventArgsオブジェクトがきます。これにより、描画する範囲を指定できます。<P>
+MeasureItemEventArgsクラスは、まだやっていないリストボックス、コンボボックス、チェックボックスや、メニュー項目の各コントロールのMeasureItemイベントのデータを提供します。<P>
+このクラスのプロパティは４つあります。<P>
+<TABLE BORDER="1">
+<TH BGCOLOR="#FFFF00">プロパティ</TH><TH BGCOLOR="#FFFF00">プロパティ値</TH><TH BGCOLOR="#FFFF00">意味</TH><TR>
+<TD>Graphics</TD><TD>Graphics</TD><TD>計測対象となるGraphicsオブジェクトの取得</TD><TR>
+<TD>Index</TD><TD>int</TD><TD>計測が必要な項目インデックスの取得</TD><TR>
+<TD>ItemHeight</TD><TD>int</TD><TD>項目の高さの取得・設定</TD><TR>
+<TD>ItemWidth</TD><TD>int</TD><TD>項目の幅の取得・設定</TD>
+</TABLE><P>
+DrawItemイベントを処理するには、これにDrawItemEventHandlerデリゲートを関連づけます。
+<PRE>
+DrawItem += new DrawItemEventHandler(miCat_DrawItem);
+</PRE>
+miCat_DrawItemの自作メソッドの第２引数は、DrawItemEventArgs型となります。<P>
+DrawItemEventArgsクラスは、DrawItemイベントのデータを提供します。<P>
+このクラスには７つのプロパティがあります。<P>
+<TABLE BORDER="1">
+<TH BGCOLOR="#FFFF00">プロパティ</TH><TH BGCOLOR="#FFFF00">プロパティ値</TH>
+<TH BGCOLOR="#FFFF00">意味</TH><TR>
+<TD>BackColor</TD><TD>Color</TD><TD>項目の背景色の取得</TD><TR>
+<TD>Bounds</TD><TD>Rectangle</TD><TD>描画項目の境界を表す四角形の取得</TD><TR>
+<TD>Font</TD><TD>Font</TD><TD>項目に割り当てられているフォントの取得</TD><TR>
+<TD>ForeColor</TD><TD>Color</TD><TD>項目の前景色の取得</TD><TR>
+<TD>Graphics</TD><TD>Graphics</TD><TD>描画するGraphicsの取得</TD><TR>
+<TD>Index</TD><TD>int</TD><TD>描画されている項目のインデックスの取得</TD><TR>
+<TD>State</TD><TD>DrawItemState</TD><TD>描画項目の状態の取得</TD>
+</TABLE><P>
+DrawItemState列挙体のメンバと意味は次の通りです。<P>
+<TABLE BORDER="1">
+<TH BGCOLOR="#FFFF00">メンバ</TH><TH BGCOLOR="#FFFF00">意味</TH><TR>
+<TD>Checked</TD><TD>項目がチェックされている(メニューのみ)</TD><TR>
+<TD>ComboBoxEdit</TD><TD>項目は、コンボボックスの編集部分</TD><TR>
+<TD>Default</TD><TD>項目は規定の状態</TD><TR>
+<TD>Disabled</TD><TD>項目は使用できない</TD><TR>
+<TD>Focus</TD><TD>項目にフォーカスがある</TD><TR>
+<TD>Grayed</TD><TD>項目が灰色(メニューのみ)</TD><TR>
+<TD>HotLight</TD><TD>項目はホットトラッキング中</TD><TR>
+<TD>Inactive</TD><TD>項目はアクティブでない</TD><TR>
+<TD>NoAccelerator</TD><TD>項目がキーボードアクセラレータなしで表示される</TD><TR>
+<TD>NoFocusRect</TD><TD>項目は、フォーカスがあることを示す四角形なしで表示される</TD><TR>
+<TD>None</TD><TD>項目には状態がない</TD><TR>
+<TD>Selected</TD><TD>項目が選択されている</TD>
+</TABLE><P>
+DrawItemEventArgsクラスのDrawBackground メソッドは、背景を描画します。
+また、DrawFocusRectangleメソッドは、フォーカスを示す四角形を描画します。<P>
+さて、これだけの予備知識があれば、オーバードローメニューを作ることができます。
+では、サンプルを見てみましょう。<P>
+まず、前準備としてcat.gifという画像ファイルを、リソースとして埋め込んでおきます。
+背景を、透明処理してあるとなおよいです。
+<PRE>
+// contextmenu03.cs
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+class contextmenu03
+{
+    public static void Main()
+    {
+        MyForm mf = new MyForm();
+        Application.Run(mf);
+    }
+}
+
+class MyForm : Form
+{
+    Bitmap bmpCat;
+
+    public MyForm()
+    {
+        Text = "猫でもわかるC#";
+        BackColor = SystemColors.Window;
+
+        bmpCat = new Bitmap(GetType(), "contextmenu03.cat.gif");
+       
+
+        ContextMenu cm = new ContextMenu();
+        ContextMenu = cm;
+
+        MenuItem miFile = new MenuItem();
+        miFile.Text = "ファイル(&F)";
+        cm.MenuItems.Add(miFile);
+
+        MenuItem miExit = new MenuItem("終了(&X)");
+        miExit.Click += new EventHandler(miExit_Click);
+        miFile.MenuItems.Add(miExit);
+
+        MenuItem miCat = new MenuItem();
+        miCat.OwnerDraw = true;
+        miCat.MeasureItem += new MeasureItemEventHandler(miCat_MeasureItem);
+        miCat.DrawItem += new DrawItemEventHandler(miCat_DrawItem);
+        miCat.Click += new EventHandler(miCat_Click);
+        miFile.MenuItems.Add(miCat);
+
+        MenuItem miOpen = new MenuItem("開く(&O)");
+        miOpen.Click += new EventHandler(miOpen_Click);
+        miFile.MenuItems.Add(miOpen);
+    }
+
+    void miExit_Click(object sender, EventArgs e)
+    {
+        Close();
+    }
+
+    void miOpen_Click(object sender, EventArgs e)
+    {
+        MessageBox.Show("「開く」が選択されました",
+            "猫C#",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information);
+    }
+
+    void miCat_MeasureItem(object sender, MeasureItemEventArgs e)
+    {
+        e.ItemWidth = bmpCat.Width;
+        e.ItemHeight = bmpCat.Height;
+    }
+
+    void miCat_DrawItem(object sender, DrawItemEventArgs e)
+    {
+        Rectangle rc = e.Bounds;
+        rc.X = (rc.Width - bmpCat.Width) / 2;
+        rc.Width = bmpCat.Width;
+
+        Graphics g = e.Graphics;
+
+        e.DrawBackground();
+        g.DrawImage(bmpCat, rc);
+    }
+
+    void miCat_Click(object sender, EventArgs e)
+    {
+        MessageBox.Show("猫がクリックされました",
+            "猫C#",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information);
+    }
+}
+</PRE>
+まずは、MyFormクラスを見てみましょう。これは、Formクラスから継承されています。<P>
+また、bmpCatというインスタンスフィールドを持っています。<P>
+このクラスの、コンストラクタでは、まずText,BackColorプロパティを設定しています。<P>
+次に、リソースから、cat.gifを読み出して、Bitmapオブジェクトを生成し、bmpCatに参照を代入しています。<P>
+あとは、コンテキストメニューを作っています。<P>
+miCatを作るときのみ、ちょっと注意してください。このメニュー項目は、オーナードローします。
+<PRE>
+MenuItem miCat = new MenuItem();
+miCat.OwnerDraw = true;
+miCat.MeasureItem += new MeasureItemEventHandler(miCat_MeasureItem);
+miCat.DrawItem += new DrawItemEventHandler(miCat_DrawItem);
+miCat.Click += new EventHandler(miCat_Click);
+miFile.MenuItems.Add(miCat);
+</PRE>
+OwnerDrawプロパティをtrueに設定しています。<P>
+MeasureItem, DrawItemイベントにたいして、ハンドラをインストールしています。<P>
+次に、MeasureItemイベントに対する、ハンドラを見てみましょう。
+<PRE>
+void miCat_MeasureItem(object sender, MeasureItemEventArgs e)
+{
+    e.ItemWidth = bmpCat.Width;
+    e.ItemHeight = bmpCat.Height;
+}
+</PRE>
+MeasureItemEventArgsオブジェクトの、ItemWidthとItemHeightプロパティを、bmpCatのそれに設定しています。<P>
+次に、実際の描画処理であるDrawItemイベントに対するハンドラを見てみましょう。
+<PRE>
+void miCat_DrawItem(object sender, DrawItemEventArgs e)
+{
+    Rectangle rc = e.Bounds;
+    rc.X = (rc.Width - bmpCat.Width) / 2;
+    rc.Width = bmpCat.Width;
+
+    Graphics g = e.Graphics;
+
+    e.DrawBackground();
+    g.DrawImage(bmpCat, rc);
+}
+</PRE>
+DrawItemEventArgsオブジェクトのBoundsプロパティで、描画される矩形領域をrcに取得しています。このrcはDrawImageメソッドで利用します。<P>
+イメージの描画がこの矩形いっぱいに表示されると、横長になってしまいます。<P>
+そこで、rc.Xとrc.Widthの値を調整します。<P>
+rc.Xは、表示されるメニュー項目の幅から、イメージの幅の差の半分としました。
+そして、rc.Widthは、実際のイメージ幅としました。<P>
+これで、イメージはメニュー項目の中央に、伸縮なしで表示されるはずです。<P>
+e.DrawBackgroundメソッドで背景を塗ります。これを省略すると、選択時に背景の色が変わりません。<P>
+最期にDrawImageメソッドで、イメージを描画します。Graphics.DrawImageメソッドには無数のオーバーロードバージョンが存在します。ここで、使ったのは、次のバージョンです。<PRE>
+public void DrawImage (
+	Image image,
+	Rectangle rect
+)
+</PRE>
+rectにimageが描画されます。<P>
+では、実行結果を見てみましょう。<P>
+<IMG SRC="../img/form2501.gif" ALIGN="left">
+猫が選択されていないときは、他のメニュー項目と同じで、猫の背景は白です。
+<P>
+<BR CLEAR="left"><BR>
+<IMG SRC="../img/form2502.gif" ALIGN="left">
+猫が選択されていると、背景は青色になっています。
+<P>
+<BR CLEAR="left"><BR>
+<HR>
+[<A HREF="../index_form.html">C# フォーム Index</A>]
+[<A HREF="../index_cs.html">C# コンソール Index</A>]
+[<A HREF="../index.html">総合Index</A>]
+[<A HREF="form_24.htm">Previous Chapter</A>]
+[<A HREF="form_26.htm">Next Chapter</A>]
+<P>
+<ADDRESS>
+Update 09/Nov/2006 By Y.Kumei<BR>
+<FONT COLOR="#FF0000">
+当ホーム・ページの一部または全部を無断で複写、複製、
+転載あるいはコンピュータ等のファイルに保存することを禁じます。
+</FONT>
+</ADDRESS>
+</BODY>
+</HTML>

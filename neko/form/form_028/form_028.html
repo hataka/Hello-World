@@ -1,0 +1,184 @@
+<HTML>
+<!--        form_28.htm        -->
+<!--        2006/11/12       -->
+<HEAD>
+<LINK REL=STYLESHEET HREF="../neko.css" TYPE="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>第２８章 </TITLE>
+<base href='http://www.kumei.ne.jp/c_lang/form/'>
+<meta http-equiv='Content-Type'content='text/htm; charset=UTF-8'>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<CENTER>
+<H1>第２８章 テキストボックス</H1>
+</CENTER>
+<HR>
+<IMG SRC="../img/my10x.gif" ALIGN="left">
+テキストボックスがあると、ユーザーからのテキスト入力を受け取ることができます。
+<P>
+<BR CLEAR="left"><BR>
+テキストボックスは、TextBoxクラスを利用して作ります。<P>
+まずは、TextBoxクラスの継承関係を見てみましょう。
+<PRE>
+System.Object 
+   System.MarshalByRefObject 
+     System.ComponentModel.Component 
+       System.Windows.Forms.Control 
+         System.Windows.Forms.TextBoxBase 
+          System.Windows.Forms.TextBox
+</PRE>
+Buttonクラスと同じく、Controlクラスから継承されていますね。従ってテキストボックスはボタンと取り扱いが非常に似ています。<P>
+まずは、コンストラクタを見てみましょう。
+<PRE>
+public TextBox ()
+</PRE>
+オーバーロードバージョンはありません。<P>
+次のようなプロパティを知っているとすぐにテキストボックスが作れます。<P>
+<TABLE BORDER="1">
+<TH BGCOLOR="#FFFF00">プロパティ</TH><TH BGCOLOR="#FFFF00">プロパティ値</TH><TH BGCOLOR="#FFFF00">意味</TH><TR>
+<TD>Text</TD><TD>string</TD><TD>コントロール内に表示するテキストの取得・設定</TD><TR>
+<TD>Location</TD><TD>Point</TD><TD>左上隅の座標の取得・設定</TD><TR>
+<TD>Parent</TD><TD>Control</TD><TD>親の取得・設定</TD><TR>
+<TD>Width</TD><TD>int</TD><TD>コントロールの幅の取得・設定</TD><TR>
+<TD>Height</TD><TD>int</TD><TD>コントロールの高さの取得・設定</TD>
+</TABLE><P>
+では、さっそく簡単なテキストボックスのプログラムを作ってみましょう。
+<PRE>
+// textbox01.cs
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+class textbox01
+{
+    public static void Main()
+    {
+        Application.Run(new MyForm());
+    }
+}
+
+class MyForm : Form
+{
+    TextBox textbox;
+    
+    public MyForm()
+    {
+        Text = "猫でもわかるC#";
+        BackColor = Color.Aqua;
+        FormBorderStyle = FormBorderStyle.Fixed3D;
+        Width = 200;
+        Height = 110;
+        MaximizeBox = false;
+
+        textbox = new TextBox();
+        textbox.Parent = this;
+        textbox.Location = 
+            new Point((ClientSize.Width - textbox.Width) / 2, 10);
+
+        Button btn = new Button();
+        btn.Text = "押す";
+        btn.Parent = this;
+        btn.Location = new Point((ClientSize.Width - btn.Width) / 2,
+            20 + textbox.Height);
+        btn.Click += new EventHandler(btn_Click);
+        btn.BackColor = SystemColors.Control;
+    }
+
+    void btn_Click(object sender, EventArgs e)
+    {
+        MessageBox.Show("あなたは「" + textbox.Text + "」と記入しましたね",
+            "猫C#",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information);
+    }
+
+    protected override void OnFormClosing(FormClosingEventArgs e)
+    {
+        base.OnFormClosing(e);
+        DialogResult dr;
+        dr = MessageBox.Show("本当に終了してよいですか",
+            "猫C#",
+            MessageBoxButtons.YesNo,
+            MessageBoxIcon.Question,
+            MessageBoxDefaultButton.Button2);
+        if (dr == DialogResult.Yes)
+            e.Cancel = false;
+        else
+            e.Cancel = true;
+    }
+}
+</PRE>
+MyFormクラスは、Formクラスを継承しています。<P>
+コンストラクタでは、このフォームのテキストと背景色をいつものように設定しています。さらに、FormBorderStyleも設定しています。これは、フォームの境界のスタイルを取得・設定するプロパティです。
+<PRE>
+public FormBorderStyle FormBorderStyle { get; set; }
+</PRE>
+プロパティ値のFormBorderStyle列挙体のメンバには次のようなものがあります。<P>
+<TABLE BORDER="1">
+<TH BGCOLOR="#FFFF00">メンバ</TH><TH BGCOLOR="#FFFF00">意味</TH><TR>
+<TD>Fixed3D</TD><TD>固定された3D境界線</TD><TR>
+<TD>FixedDialog</TD><TD>固定されたダイアログスタイルの境界線</TD><TR>
+<TD>FixedSingle</TD><TD>固定された一直線の境界線</TD><TR>
+<TD>FixedToolWindow</TD><TD>サイズ変更できないツールウィンドウの境界線</TD><TR>
+<TD>None</TD><TD>境界線なし</TD><TR>
+<TD>Sizable</TD><TD>サイズ変更できる境界線</TD><TR>
+<TD>SizableToolWindow</TD><TD>サイズ変更できるツールウィンドウの境界線</TD>
+</TABLE><P>
+また、このプログラムではフォームの幅・高さも設定しています。
+<PRE>
+public int Width { get; set; }
+public int Height { get; set; }
+</PRE>
+さらに、Form.MaximizeBoxをfalseにして、最大化ボタンを無効にしています。
+<PRE>
+public bool MaximizeBox { get; set; }
+</PRE>
+最小化ボタンを有効にするかどうかは、Form.MinimizeBoxプロパティを使います。
+<PRE>
+public bool MinimizeBox { get; set; }
+</PRE>
+次にいよいよテキストボックスを作っています。
+<PRE>
+textbox = new TextBox();
+textbox.Parent = this;
+textbox.Location = 
+    new Point((ClientSize.Width - textbox.Width) / 2, 10);
+</PRE>
+子供コントロールを作るときは、必ずParentプロパティでその親を指定する必要がありました。テキストボックスについても同じです。<P>
+Locationプロパティで表示位置を指定します。<P>
+Form.ClientSizeプロパティは、フォームのクライアント領域の幅・高さを取得・設定します。<PRE>
+public Size ClientSize { get; set; }
+</PRE>
+テキストボックスが、水平方向でクライアント領域の中央に表示されるようにしていますね。
+<P>
+次に、ボタンを作っています。<P>
+これも、水平方向でクライアント領域の中央に来るように指定しています。<P>
+ボタンが押されたら、btn_Clickハンドラが実行されるようにしています。<P>
+btn_Clickメソッドが実行されると、テキストボックスのTextプロパティをメッセージボックスで表示しています。このプログラムでは、btn_Clickメソッドからもテキストボックスが見えるようにするため、MyFormクラスのインスタンスフィールドにtextboxフィールドを作っている点に注意してください。<P>
+OnFormClosingメソッドをオーバーライドして、終了確認をしています。<P>
+では、実行結果を見てみましょう。<P>
+<IMG SRC="../img/form2801.gif" ALIGN="left">
+テキストボックスに適当な文字列を入力して「押す」ボタンを押します。
+<P>
+<BR CLEAR="left"><BR>
+<IMG SRC="../img/form2802.gif" ALIGN="left">
+テキストボックスに入力した文字列が、メッセージボックスで表示されます。
+<P>
+<BR CLEAR="left"><BR>
+<HR>
+[<A HREF="../index_form.html">C# フォーム Index</A>]
+[<A HREF="../index_cs.html">C# コンソール Index</A>]
+[<A HREF="../index.html">総合Index</A>]
+[<A HREF="form_27.htm">Previous Chapter</A>]
+[<A HREF="form_29.htm">Next Chapter</A>]
+<P>
+<ADDRESS>
+Update 12/Nov/2006 By Y.Kumei<BR>
+<FONT COLOR="#FF0000">
+当ホーム・ページの一部または全部を無断で複写、複製、
+転載あるいはコンピュータ等のファイルに保存することを禁じます。
+</FONT>
+</ADDRESS>
+</BODY>
+</HTML>

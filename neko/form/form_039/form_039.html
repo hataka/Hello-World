@@ -1,0 +1,146 @@
+<HTML>
+<!--        form_39.htm        -->
+<!--        2006/11/23       -->
+<HEAD>
+<LINK REL=STYLESHEET HREF="../neko.css" TYPE="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>第３９章</TITLE>
+<base href='http://www.kumei.ne.jp/c_lang/form/'>
+<meta http-equiv='Content-Type'content='text/htm; charset=UTF-8'>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<CENTER>
+<H1>第３９章 最も簡単なダイアログボックス</H1>
+</CENTER>
+<HR>
+<IMG SRC="../img/my10x.gif" ALIGN="left">
+C#では、ダイアログボックスは、基本的にフォームと同じです。
+<P>
+<BR CLEAR="left"><BR>
+一般的に、ダイアログボックスと言えば、タスクモーダル・ダイアログボックスを指します。これは、ダイアログボックスが表示されている間、その親の操作ができません。<P>
+Win32APIプログラミングでは、システムモーダルなダイアログボックスも作成可能でしたがC#では、作成できないことになっています。<P>
+では、ダイアログボックスを作るにはどうしたらよいでしょうか。<P>
+<PRE>
+１．呼び出し側のフォームでFormオブジェクトを作成する
+２．ShowDialogメソッドで、このダイアログを見えるようにする
+</PRE>
+たったこれだけです。しかし、通常ダイアログボックスには、システムメニューボタン、最大化・最小化ボタンがないのが普通です。また、サイズも変更不能であることが一般的です。そこで、ダイアログボックスとして利用するフォームのプロパティは
+<PRE>
+１．ControlBox, MaximizeBox, MinimizeBoxをfalseに設定する
+２．FormBorderStyleをFormBorderStyle.FixedDialogに設定する
+</PRE>
+また、ダイアログボックスがWindowsのタスクバーに表示させないようにするため
+<PRE>
+ShowInTaskbarをfalseに設定する
+</PRE>
+ことが必要です。また、ダイアログボックスは「OK」とか「キャンセル」ボタンを押したときに閉じるのが普通です。これには、<FONT COLOR="#FF0000">Button.DialogResultプロパティ</FONT>を設定します。<P>
+これは、親フォームがShowDialogメソッドで表示されている場合、ボタンをクリックすると親フォームが自動的に閉じてくれます。<P>
+では、サンプルを見てみましょう。
+<PRE>
+// dialog01.cs
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+class dialog01 : Form
+{
+    public static void Main()
+    {
+        Application.Run(new dialog01());
+    }
+
+    public dialog01()
+    {
+        Text = "猫でもわかるC#プログラミング";
+        BackColor = SystemColors.Window;
+
+        MainMenu mm = new MainMenu();
+        Menu = mm;
+
+        MenuItem miFile = new MenuItem();
+        miFile.Text = "ファイル(&F)";
+        mm.MenuItems.Add(miFile);
+
+        MenuItem miExit = new MenuItem();
+        miExit.Text = "終了(&X)";
+        miExit.Click += new EventHandler(miExit_Click);
+        miFile.MenuItems.Add(miExit);
+
+        MenuItem miOption = new MenuItem();
+        miOption.Text = "オプション(&O)";
+        mm.MenuItems.Add(miOption);
+
+        MenuItem miDialog = new MenuItem();
+        miDialog.Text = "ダイアログボックスを出す(&D)";
+        miDialog.Click += new EventHandler(miDialog_Click);
+        miOption.MenuItems.Add(miDialog);
+    }
+
+    void miDialog_Click(object sender, EventArgs e)
+    {
+        MyDialog mydlg = new MyDialog();
+        mydlg.ShowDialog();
+    }
+
+    void miExit_Click(object sender, EventArgs e)
+    {
+        Close();
+    }
+}
+
+class MyDialog : Form
+{
+    public MyDialog()
+    {
+        Text = "ダイアログボックス";
+
+        FormBorderStyle = FormBorderStyle.FixedDialog;
+        ControlBox = false;
+        ShowInTaskbar = false;
+        MaximizeBox = false;
+        MinimizeBox = false;
+
+        Button btnOK = new Button();
+        btnOK.Text = "OK";
+        btnOK.Parent = this;
+        btnOK.Location = 
+            new Point((ClientSize.Width - btnOK.Width) / 2,
+            ClientSize.Height - btnOK.Height - 10);
+        btnOK.DialogResult = DialogResult.OK;
+    }
+}
+</PRE>
+メニューの「ダイアログボックスを出す」を選択すると、miDialog_Clickメソッドが呼び出されます。このメソッドでは単に
+<PRE>
+MyDialog mydlg = new MyDialog();
+mydlg.ShowDialog();
+</PRE>
+と、しているだけです。これでダイアログボックスが出現します。このダイアログボックスのプロパティは、MyDialog(Formクラスを継承)クラスのコンストラクタで設定しています。<P>
+また、ダイアログボックス上の「OK」ボタンのDialogResultプロパティにDialogResult.OKを設定してますが、このボタンが押されると親のダイアログが閉じます。またShowDialogメソッドの戻り値がDialogResult.OKとなります(このプログラムでは利用していない)。呼び出し元では、どのボタンが押されてダイアログが閉じたのかがわかります。<P>
+簡単ですね。<P>
+実行結果は次のようになります。<P>
+<IMG SRC="../img/form3901.gif" ALIGN="left">
+メニューの「オプション」「ダイアログボックスを出す」を選択します。
+<P>
+<BR CLEAR="left"><BR>
+<IMG SRC="../img/form3902.gif" ALIGN="left">
+このダイアログか表示されている間、親フォームのメニュー等は一切操作ができなくなります。
+<P>
+<BR CLEAR="left"><BR>
+<HR>
+[<A HREF="../index_form.html">C# フォーム Index</A>]
+[<A HREF="../index_cs.html">C# コンソール Index</A>]
+[<A HREF="../index.html">総合Index</A>]
+[<A HREF="form_38.htm">Previous Chapter</A>]
+[<A HREF="form_40.htm">Next Chapter</A>]
+<P>
+<ADDRESS>
+Update 23/Nov/2006 By Y.Kumei<BR>
+<FONT COLOR="#FF0000">
+当ホーム・ページの一部または全部を無断で複写、複製、
+転載あるいはコンピュータ等のファイルに保存することを禁じます。
+</FONT>
+</ADDRESS>
+</BODY>
+</HTML>

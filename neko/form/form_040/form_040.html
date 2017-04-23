@@ -1,0 +1,177 @@
+<HTML>
+<!--        form_40.htm        -->
+<!--        2006/11/24       -->
+<HEAD>
+<LINK REL=STYLESHEET HREF="../neko.css" TYPE="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>第４０章</TITLE>
+<base href='http://www.kumei.ne.jp/c_lang/form/'>
+<meta http-equiv='Content-Type'content='text/htm; charset=UTF-8'>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<CENTER>
+<H1>第４０章 ダイアログボックスとの連絡</H1>
+</CENTER>
+<HR>
+<IMG SRC="../img/my10x.gif" ALIGN="left">
+ダイアログボックスで入力した内容は、親フォームで知る必要があります。
+<P>
+<BR CLEAR="left"><BR>
+では、どのようにしたらよいのでしょうか。いろいろな方法があると思われます。
+ここでは、最も簡単な方法を採用します。<P>
+親フォームにpublicでstaticなフィールドを準備しておきます。<P>
+そして、ダイアログが閉じられようとするとき、このフィールドに書き込めばよいわけです。<P>
+さて、それとは別にダイアログボックス上のコントロールには、タブオーダーを振っておくことが一般的です。タブキーを押すごとに、タブオーダーに従って、フォーカスが移動します。これには、TabIndexプロパティを指定します。TabIndexは0以上の整数値です。また、TabIndexはTabStopプロパティがtrueの時有効です(デフォルトではtrue)。<P>
+では、サンプルのプログラムを見てみましょう。
+<PRE>
+// dialog02.cs
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+class dialog02 : Form
+{
+    public static string str;
+
+    public static void Main()
+    {
+        dialog02 form = new dialog02();
+        Application.Run(form);
+    }
+
+    public dialog02()
+    {
+        Text = "猫でもわかるプログラミング";
+        BackColor = SystemColors.Window;
+
+        MainMenu mm = new MainMenu();
+
+        MenuItem miFile = new MenuItem();
+        miFile.Text = "ファイル(&F)";
+        mm.MenuItems.Add(miFile);
+
+        MenuItem miExit = new MenuItem();
+        miExit.Text = "終了(&X)";
+        miFile.MenuItems.Add(miExit);
+        miExit.Click += new EventHandler(miExit_Click);
+
+        MenuItem miOption = new MenuItem();
+        miOption.Text = "オプション(&O)";
+        mm.MenuItems.Add(miOption);
+
+        MenuItem miDialog = new MenuItem();
+        miDialog.Text = "ダイアログを出す(&D)";
+        miDialog.Click += new EventHandler(miDialog_Click);
+        miOption.MenuItems.Add(miDialog);
+
+        Menu = mm;
+    }
+
+    void miDialog_Click(object sender, EventArgs e)
+    {
+        MyDialog dlg = new MyDialog();
+        DialogResult dr = dlg.ShowDialog();
+
+        if (dr == DialogResult.OK)
+        {
+            Invalidate();
+        }
+    }
+
+    void miExit_Click(object sender, EventArgs e)
+    {
+        Close();
+    }
+
+    protected override void OnPaint(PaintEventArgs e)
+    {
+        base.OnPaint(e);
+        Graphics g = e.Graphics;
+        g.DrawString(str, Font, Brushes.Black, new PointF(10f, 10f));
+    }
+}
+
+class MyDialog : Form
+{
+    TextBox txtBox;
+
+    public MyDialog()
+    {
+        Text = "オプション";
+        MaximizeBox = false;
+        MinimizeBox = false;
+        ControlBox = false;
+        ShowInTaskbar = false;
+        FormBorderStyle = FormBorderStyle.FixedDialog;
+
+        Width = 250;
+        Height = 130;
+
+        Button btnOK = new Button();
+        btnOK.Text = "OK";
+        btnOK.Location = new Point(10, ClientSize.Height - btnOK.Height - 5);
+        btnOK.Parent = this;
+        btnOK.TabIndex = 1;
+        btnOK.Click += new EventHandler(btnOK_Click);
+        btnOK.DialogResult = DialogResult.OK;
+
+        Button btnCancel = new Button();
+        btnCancel.Text = "Cancel";
+        btnCancel.Location = new Point(ClientSize.Width - btnCancel.Width - 10,
+            ClientSize.Height - btnCancel.Height - 5);
+        btnCancel.Parent = this;
+        btnCancel.TabIndex = 2;
+        btnCancel.DialogResult = DialogResult.Cancel;
+
+        txtBox = new TextBox();
+        txtBox.Parent = this;
+        txtBox.Location = new Point(10, 10);
+        txtBox.Width = ClientSize.Width - 20;
+        txtBox.TabIndex = 0;
+    }
+
+    void btnOK_Click(object sender, EventArgs e)
+    {
+        dialog02.str = txtBox.Text;
+    }
+}
+</PRE>
+MyDialogクラスを見てください。OKボタンがクリックされるとbtnOK_Clickメソッドが呼び出されます。そして、dialog02.strにテキストボックスのテキストがコピーされます。<P>
+次に、dialog02クラスのmiDialog_Clickメソッドを見てください。
+<PRE>
+DialogResult dr = dlg.ShowDialog();
+</PRE>
+と、いうようにダイアログボックスを見えるようにしています。ダイアログボックスが閉じられると、どのボタンが押されて閉じることになったかがdrに示されます。<P>
+もし、drがDialogResult.OKなら、Invalidateメソッドを呼んで再描画させます。<P>
+再描画の内容は、OnPaintメソッドを見るとわかりますね。
+<PRE>
+g.DrawString(str, Font, Brushes.Black, new PointF(10f, 10f));
+</PRE>
+つまり、自分のクラスのstrフィールドをクライアント領域に表示しています。<P>
+では、実行結果を見てみましょう。<P>
+<IMG SRC="../img/form4001.gif" ALIGN="left">
+メニューの「オプション」「ダイアログを出す」を選択すると、左のようなダイアログボックスが出現します。<P>
+テキストボックスに適当な文字列を入力して、「OK」ボタンを押します。
+<P>
+<BR CLEAR="left"><BR>
+<IMG SRC="../img/form4002.gif" ALIGN="left">
+親フォームのクライアント領域に、ダイアログボックスのテキストボックスに書き込んだ内容が表示されます。
+<P>
+<BR CLEAR="left"><BR>
+<HR>
+[<A HREF="../index_form.html">C# フォーム Index</A>]
+[<A HREF="../index_cs.html">C# コンソール Index</A>]
+[<A HREF="../index.html">総合Index</A>]
+[<A HREF="form_39.htm">Previous Chapter</A>]
+[<A HREF="form_41.htm">Next Chapter</A>]
+<P>
+<ADDRESS>
+Update 24/Nov/2006 By Y.Kumei<BR>
+<FONT COLOR="#FF0000">
+当ホーム・ページの一部または全部を無断で複写、複製、
+転載あるいはコンピュータ等のファイルに保存することを禁じます。
+</FONT>
+</ADDRESS>
+</BODY>
+</HTML>

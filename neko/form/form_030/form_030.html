@@ -1,0 +1,183 @@
+<HTML>
+<!--        form_30.htm        -->
+<!--        2006/11/14       -->
+<HEAD>
+<LINK REL=STYLESHEET HREF="../neko.css" TYPE="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>第３０章 </TITLE>
+<base href='http://www.kumei.ne.jp/c_lang/form/'>
+<meta http-equiv='Content-Type'content='text/htm; charset=UTF-8'>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<CENTER>
+<H1>第３０章 C#版ISBNチェッカーを作ってみる</H1>
+</CENTER>
+<HR>
+<IMG SRC="../img/my10x.gif" ALIGN="left">
+ISBNとは、書籍の裏表紙に書いてある10桁の登録番号です。
+<P>
+<BR CLEAR="left"><BR>
+この、番号は「間違い検出符号列」で構成されています。つまり、適当な10桁の番号では不正な番号であることがわかってしまいます。<P>
+最初の桁を10倍します。次の桁は9倍します。その次は8倍します。これを9桁目まで繰り返します。最後の桁はそのままです。最後の桁がアルファベットのXであることがあります。この場合は10とします。これらを合計した数が11の倍数であれば、正しいISBNということになります。つまり、最後の桁で11の倍数になるように調整しているわけです。<P>
+11の倍数になるためには、最後に10をたさなくてはならない場合もでてきます。それでその場合はXにするわけです。<P>
+これは、C言語編<A HREF="../intro/no_08.htm">第８章</A>でも取り扱っています。<P>
+これは、今までの知識のみで作ることができます。<P>
+さっそく、作ってみましょう。
+<PRE>
+// isbn01.cs
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+class isbn01 : Form
+{
+    // テキストボックスがこのクラスのみんなから見えるように
+    // フィールドにしてある
+    TextBox tb;
+
+    public static void Main()
+    {
+        Application.Run(new isbn01());
+    }
+
+    // コンストラクタ
+    public isbn01()
+    {
+        Text = "猫でもわかるC#";
+        BackColor = SystemColors.Window;
+        FormBorderStyle = FormBorderStyle.FixedSingle;
+        MaximizeBox = false;
+        MinimizeBox = false;
+
+        tb = new TextBox();
+        tb.Parent = this;
+        tb.Location = new Point(10, 10);
+        tb.Width = 150;
+
+        Button btn = new Button();
+        btn.Parent = this;
+        btn.BackColor = SystemColors.Control;
+        btn.Text = "チェック";
+        btn.Click += new EventHandler(btn_Click);
+        btn.Location = new Point(20 + tb.Width, 10);
+
+        // 親フォームの大きさを調整するための計算
+        Size sz = new Size();
+        sz.Width = 30 + tb.Width + btn.Width;
+        sz.Height = 20 + tb.Height;
+
+        // 親フォームのクライアント領域サイズの調整
+        tb.Parent.ClientSize = sz;
+
+    }
+
+    void btn_Click(object sender, EventArgs e)
+    {
+        string strTitle = "ISBN検査結果";
+
+        // nISBNを0に戻しておく
+        int nISBN = 0;
+
+        // 入力桁数が10桁でないときはエラー
+        if (tb.Text.Length != 10)
+        {
+            MessageBox.Show("桁が変です",
+                strTitle,
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Stop);
+            tb.Clear();
+            tb.Focus();
+            return;
+        }
+
+        // nISBNを９桁目まで計算
+        for (int i = 0; i < 9; i++)
+        {
+            try
+            {
+                nISBN += Int32.Parse(tb.Text[i].ToString()) * (10 - i);
+            }
+            catch
+            {
+                MessageBox.Show("不正な文字が含まれています",
+                    strTitle,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Stop);
+                tb.Clear();
+                tb.Focus();
+                return;
+            }
+        }
+
+        // 最後の桁がXまたはxの時は10を加える
+        if (tb.Text[9] == 'X' || tb.Text[9] == 'x')
+            nISBN += 10;
+        else
+        {
+            try
+            {
+                nISBN += Int32.Parse(tb.Text[9].ToString());
+            }
+            catch
+            {
+                MessageBox.Show("最後の文字が数字ではありません",
+                    strTitle,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Stop);
+                tb.Clear();
+                tb.Focus();
+                return;
+            }
+        }
+        if (nISBN % 11 == 0)
+            MessageBox.Show("正しいISBNです",
+                strTitle,
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+        else
+            MessageBox.Show("不正なISBNです",
+                strTitle,
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Stop);
+    }
+}
+</PRE>
+ボタンが、押されたときにテキストボックスから、文字列を読み出して正しいISBNかどうかをチェックしています。<P>
+桁が10桁でないときは、直ちにエラーにしています。
+<PRE>
+nISBN += Int32.Parse(tb.Text[i].ToString()) * (10 - i);
+</PRE>
+でiを0から9まで変化させ、合計をnISBNに代入しています。<P>
+<PRE>
+Int32.Parse(Strring型);
+</PRE>
+のような変換はコンソール編<A HREF="../cs/cs_04.htm">第４章</A>、<A HREF="../cs/cs_13.htm">第１３章</A>などで出てきていますので、忘れてしまった人は見ておいてください。<P>
+また、try-catch構文については、コンソール編<A HREF="../cs/cs_65.htm">第６５章</A>を参照してください。<P>
+最後の桁が「X」または「x」なら、nISBNに10を加えます。<P>
+nISBNが11の倍数かどうかは、nISBNを11で割ってあまりが0かどうかを調べるとよいですね。<P>
+では、実行結果を見てみましょう。<P>
+<IMG SRC="../img/form3001.gif" ALIGN="left">
+テキストボックスに、ISBNを入力して、「チェック」ボタンを押します。
+<P>
+<BR CLEAR="left"><BR>
+<IMG SRC="../img/form3002.gif" ALIGN="left">
+このISBNは正しい番号のようです。
+<P>
+<BR CLEAR="left"><BR>
+<HR>
+[<A HREF="../index_form.html">C# フォーム Index</A>]
+[<A HREF="../index_cs.html">C# コンソール Index</A>]
+[<A HREF="../index.html">総合Index</A>]
+[<A HREF="form_29.htm">Previous Chapter</A>]
+[<A HREF="form_31.htm">Next Chapter</A>]
+<P>
+<ADDRESS>
+Update 14/Nov/2006 By Y.Kumei<BR>
+<FONT COLOR="#FF0000">
+当ホーム・ページの一部または全部を無断で複写、複製、
+転載あるいはコンピュータ等のファイルに保存することを禁じます。
+</FONT>
+</ADDRESS>
+</BODY>
+</HTML>

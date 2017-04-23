@@ -1,0 +1,134 @@
+<HTML>
+<!--        form_06.htm        -->
+<!--        2006/10/21       -->
+<HEAD>
+<LINK REL=STYLESHEET HREF="../neko.css" TYPE="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>第６章 </TITLE>
+<base href='http://www.kumei.ne.jp/c_lang/form/'>
+<meta http-equiv='Content-Type'content='text/htm; charset=UTF-8'>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<CENTER>
+<H1>
+第６章 テキスト表示をもう少し詳しくみてみる
+</H1>
+</CENTER>
+<HR>
+<IMG SRC="../img/my10x.gif" ALIGN="left">
+この章では、Graphics.DrawStringメソッドの別バージョンの使い方を見てみます。
+<P>
+<BR CLEAR="left"><BR>
+DrawStringメソッドには、６つのオーバーロードバージョンがあります。このうち、この章では描画範囲を矩形で指定したバージョンを使ってみます。
+<PRE>
+public void DrawString (
+	string s,
+	Font font,
+	Brush brush,
+	RectangleF layoutRectangle
+)
+</PRE>
+layoutRectangleには、描画する範囲を示すRectangleF構造体を指定します。<P>
+RectangleF構造体には、オーバーロードされた２つのコンストラクタがあります。
+<PRE>
+public RectangleF (
+	PointF location,
+	SizeF size
+)
+public RectangleF (
+	float x,
+	float y,
+	float width,
+	float height
+)
+</PRE>
+locationは、四角形の左上隅を表すPointF構造体です。PointF構造体はすでに<A HREF="form_03.htm">第３章</A>で取り扱っています。この構造体には、次で示すコンストラクタがあります。
+<PRE>
+public PointF (
+	float x,
+	float y
+)
+</PRE>
+SizeF構造体のコンストラクタは、
+<PRE>
+public SizeF (
+	float width,
+	float height
+)
+</PRE>
+となっています。このほかに２つのオーバーロードバージョンがあります。<P>
+publicなプロパティには
+<PRE>
+public float Width { get; set; } //幅
+public float Height { get; set; } //高さ
+public bool IsEmpty { get; }
+</PRE>
+IsEmptyプロパティは、幅と高さが0かどうかを調べます。<P>
+では、四角形で描画領域を指定したDrawStringメソッドの例を見てみましょう。
+<PRE>
+// drawstring02.cs
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+class drawstring02 : Form
+{
+    public static void Main()
+    {
+        drawstring02 d2 = new drawstring02();
+
+        Application.Run(d2);
+    }
+
+    public drawstring02()
+    {
+        Text = "猫でもわかるプログラミング";
+        BackColor = Color.White;
+    }
+
+    protected override void OnPaint(PaintEventArgs e)
+    {
+        base.OnPaint(e);
+        Graphics g = e.Graphics;
+        string str = "今日はよい天気です。\n" +
+            "しかし明日もよい天気かどうかはわかりません。" +
+            "明日は、明日の風が吹きます。";
+        Font ft = new Font("ＭＳ ゴシック", 20);
+        RectangleF rf = new RectangleF(10F, 10F, 230F, 200F);
+        g.DrawRectangle(new Pen(Color.Blue), 10, 10, 230, 200 );
+        g.DrawString(str, ft, Brushes.Black, rf); 
+    }
+}
+</PRE>
+この例では、DrawStringメソッドの描画領域をはっきりさせるために、Graphics.DrawRectangleメソッドで、描画領域の四角形を描画しています。
+<PRE>
+public void DrawRectangle (
+	Pen pen,
+	int x,
+	int y,
+	int width,
+	int height
+)
+</PRE>
+penは描画のためのペンオブジェクト、(x,y)は四角形の左上隅の座標、width,heightは四角形の幅と高さです。(他にもオーバーロードバージョンがあります)<P>
+実行結果は、次のようになります。<P>
+<IMG SRC="../img/form0601.gif" ALIGN="left">
+<P>
+<BR CLEAR="left"><BR>
+<HR>
+[<A HREF="../index_form.html">C# フォーム Index</A>]
+[<A HREF="../index_cs.html">C# コンソール Index</A>]
+[<A HREF="../index.html">総合Index</A>]
+[<A HREF="form_05.htm">Previous Chapter</A>]
+[<A HREF="form_07.htm">Next Chapter</A>]
+<P>
+<ADDRESS>
+Update 21/Oct/2006 By Y.Kumei<BR>
+<FONT COLOR="#FF0000">
+当ホーム・ページの一部または全部を無断で複写、複製、
+転載あるいはコンピュータ等のファイルに保存することを禁じます。
+</FONT>
+</ADDRESS>
+</BODY>
+</HTML>

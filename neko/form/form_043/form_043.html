@@ -1,0 +1,239 @@
+<HTML>
+<!--        form_43.htm        -->
+<!--        2006/11/27       -->
+<HEAD>
+<LINK REL=STYLESHEET HREF="../neko.css" TYPE="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>第４３章</TITLE>
+<base href='http://www.kumei.ne.jp/c_lang/form/'>
+<meta http-equiv='Content-Type'content='text/htm; charset=UTF-8'>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<CENTER>
+<H1>第４３章 双方向通信するモードレス・ダイアログボックス</H1>
+</CENTER>
+<HR>
+<IMG SRC="../img/my10x.gif" ALIGN="left">
+タスク・モーダルなダイアログボックスでは、通常「OK」ボタンが押されたときに、ダイアログボックスに入力された内容を読み取り、親に連絡するのが普通です。これに対し、モードレス・ダイアログボックスでは、オーナーとダイアログボックス間で、もっと密接に通信しあう必要があります。
+<P>
+<BR CLEAR="left"><BR>
+この章では、オーナーのフォームとモードレス・ダイアログボックスに同じチェックボックスを持ち、どちらかのチェック内容が変更になったら、他方にそれが反映されるようにします。<P>
+また、<A HREF="form_42.htm">前章</A>では、無制限にモードレス・ダイアログボックスを出現させることができましたが、ここでは、１つに制限します。<P>
+このようなプログラムで、威力を発揮するのがダイアログボックス側のOwnerプロパティです。また、オーナーフォーム側ではOwnedFormsプロパティです。<P>
+Ownerプロパティはすでに、<A HREF="form_42.htm">前章</A>で使っていますね。<P>
+OwnedFormsプロパティはSystem.Windows.Forms名前空間で定義されており、Formクラスのプロパティです。
+<PRE>
+public Form[] OwnedForms { get; }
+</PRE>
+プロパティ値は、フォームが所有しているすべてのフォームを表すForm配列を取得します。あるフォームを所有する場合は、AddOwnedFormメソッドを使います。RemoveOwnedFormメソッドで所有を放棄します(この章のプログラムでは使用していません)。<P>
+OwnedFormsプロパティは、配列なのでLengthを使って所有しているフォームの数を知ることができます。<P>
+では、サンプルのプログラムを見てみましょう。
+<PRE>
+// modeless02.cs
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+class modeless02 : Form
+{
+    public static void Main()
+    {
+        modeless02 form = new modeless02();
+        Application.Run(form);
+    }
+
+    public modeless02()
+    {
+        Text = "猫でもわかるC#プログラミング";
+        BackColor = SystemColors.Window;
+
+        MainMenu mm = new MainMenu();
+
+        MenuItem miFile = new MenuItem("ファイル(&F)");
+        mm.MenuItems.Add(miFile);
+
+        MenuItem miExit = new MenuItem("終了(&X)");
+        miExit.Click += new EventHandler(miExit_Click);
+        miFile.MenuItems.Add(miExit);
+
+        MenuItem miOption = new MenuItem("オプション(&O)");
+        mm.MenuItems.Add(miOption);
+
+        MenuItem miDlg = new MenuItem("ダイアログを出す(&D)");
+        miDlg.Click += new EventHandler(miDlg_Click);
+        miOption.MenuItems.Add(miDlg);
+
+        Menu = mm;
+
+        CheckBox cb0 = new CheckBox();
+        cb0.Text = "チェックボックス0";
+        cb0.Location = new Point(10, 10);
+        cb0.Parent = this;
+        cb0.CheckedChanged += new EventHandler(cb_CheckedChanged);
+
+        CheckBox cb1 = new CheckBox();
+        cb1.Text = "チェックボックス1";
+        cb1.Location = new Point(10, 15 + cb0.Height);
+        cb1.Parent = this;
+        cb1.CheckedChanged += new EventHandler(cb_CheckedChanged);
+    }
+
+    void miExit_Click(object sender, EventArgs e)
+    {
+        Close();
+    }
+
+    void miDlg_Click(object sender, EventArgs e)
+    {
+        if (OwnedForms.Length >= 1)
+        {
+            MessageBox.Show("すでにダイアログは出ています",
+                "猫C#", MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+            return;
+        }
+        MyModeless modeless = new MyModeless();
+        modeless.Owner = this;
+        modeless.Show();
+    }
+
+    void cb_CheckedChanged(object sender, EventArgs e)
+    {
+        if (OwnedForms.Length == 0)
+            return;
+
+        for (int i = 0; i < 2; i++)
+        {
+            if (sender == Controls[i])
+            {
+                ((CheckBox)OwnedForms[0].Controls[i]).Checked =
+                    ((CheckBox)sender).Checked;
+                break;
+            }
+
+        }
+
+    }
+}
+</PRE>
+Mainメソッドでは、いつものようにメイン・フォームを作成しています。<P>
+コンストラクタでは、メニューとチェックボックスを作成しています。<P>
+チェックボックスのチェックが変更されたら、cb_CheckedChangedメソッドが呼ばれるようにしておきます。<P>
+メニューの「終了」が選択されると、miExit_Clickメソッドが呼ばれ、フォームをCloseしてプログラムを終了します。<P>
+メニューの「ダイアログを出す」が選択されると、miDlg_Clickメソッドが呼ばれます。<P>もし、OwnedForms.Lengthが１以上であれば(実際には0か1のいずれかで2以上にはならないが・・・)、すでにダイアログが出ているので、その旨をメッセージボックスで表示しreturnします。<P>
+ダイアログが、出ていないときは、モードレス・ダイアログボックスを作成します。<P>
+チェックボックスのチェック状態が、変更になったときはcb_CheckedChangedメソッドが呼ばれます。<P>
+OwnedForms.Lengthが0の場合は、ダイアログボックスが出ていないので、何もせずにreturnします。<P>
+ダイアログボックスが出ている場合は、まず自分のどのチェックボックスに変化があったかを調べます。<P>
+引数のsenderとControls[i]が一致しているかどうかを調べます。一致していれば、そのときのiを利用して、モードレス・ダイアログボックス側のチェックボックスのチェック状態を一致させます。
+<PRE>
+((CheckBox)OwnedForms[0].Controls[i]).Checked = ((CheckBox)sender).Checked;
+</PRE>
+ダイアログボックスは、１つしかないのでOwnedForms[0]です。このフォームのControls[i]が対応したチェックボックスです。<P>
+このチェックボックスのCheckedプロパティの値を、フォームのチェックボックス(sender)のCheckedプロパティの値に一致させればよいですね。<P>
+では、モードレス・ダイアログボックス側を見てみましょう。
+<PRE>
+class MyModeless : Form
+{
+    public MyModeless()
+    {
+        Text = "モードレス・ダイアログボックス";
+        ControlBox = false;
+        MinimizeBox = false;
+        MaximizeBox = false;
+        ShowInTaskbar = false;
+        FormBorderStyle = FormBorderStyle.FixedDialog;
+
+        CheckBox cb0 = new CheckBox();
+        cb0.Text = "チェックボックス0";
+        cb0.Location = new Point(10, 10);
+        cb0.Parent = this;
+        cb0.CheckedChanged += new EventHandler(cb_CheckedChanged);
+
+        CheckBox cb1 = new CheckBox();
+        cb1.Text = "チェックボックス1";
+        cb1.Location = new Point(10, 15 + cb0.Height);
+        cb1.Parent = this;
+        cb1.CheckedChanged += new EventHandler(cb_CheckedChanged);
+
+        Button btnOK = new Button();
+        btnOK.Parent = this;
+        btnOK.Text = "OK";
+        btnOK.Location = new Point((ClientSize.Width - btnOK.Width) / 2,
+            ClientSize.Height - btnOK.Height - 5);
+        btnOK.Click += new EventHandler(btnOK_Click);
+        
+    }
+
+    void btnOK_Click(object sender, EventArgs e)
+    {
+        Close();
+    }
+
+    void cb_CheckedChanged(object sender, EventArgs e)
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            if (sender == Controls[i])
+            {
+                ((CheckBox)Owner.Controls[i]).Checked =
+                ((CheckBox)sender).Checked;
+                break;
+            }
+        }
+    }
+
+    protected override void OnLoad(EventArgs e)
+    {
+        base.OnLoad(e);
+        for (int i = 0; i < 2; i++)
+        {
+            ((CheckBox)Controls[i]).Checked =
+                ((CheckBox)Owner.Controls[i]).Checked;
+        }
+    }
+}
+</PRE>
+コンストラクタで、まずこのフォームのプロパティを設定しています。<P>
+ControlBox, MinimizeBox, MaximizeBox, ShowInTaskbarプロパティをfalseにして、
+ダイアログボックスとしての体裁を整えます。<P>
+また、境界をFormBorderStyle.FixedDialogにして、サイズ変更ができないようにしています。<P>
+次に、チェックボックスを作り、OKボタンを作っています。<P>
+チェックボックスのチェック状態が変更されたら、cb_CheckedChangedメソッドが呼ばれるようにしておきます。<P>
+最後にOKボタンを作ります。OKボタンを押したとき、btnOK_Clickメソッドが呼ばれるようにしておきます。<P>
+btnOK_Clickメソッドでは、単にCloseメソッドを呼んでダイアログを閉じます。<P>
+cb_CheckedChangedメソッドが呼ばれたら、senderとControls[i]とが等しくなるiを調べます。この時Owner.Controls[i]が対応する、オーナーのチェックボックスです。あとはsender.Checkedの値にあわせるだけです。<P>
+さて、ダイアログが出ていない状態で、オーナーのチェックボックスのチェック状態が変更されることも考えられます。したがって、ダイアログボックスが出現した時点で、オーナーのチェックボックスと、ダイアログボックスのチェックボックスのチェック状態を同じにしておくことが必要です。<P>
+これは、コンストラクタで行うより、Loadイベントを処理する方がよいでしょう。Loadイベントは、フォームが始めて表示される直前に発生します。
+<PRE>
+public event EventHandler Load
+</PRE>
+OnLoadメソッドを使用すると、派生クラスでイベントを処理できます。
+<PRE>
+protected virtual void OnLoad (
+	EventArgs e
+)
+</PRE>
+ここでは、OnLoadメソッドを利用してLoadイベントの処理をしています。<P>
+では、実行結果を見てみましょう。<P>
+<IMG SRC="../img/form4301.gif" ALIGN="left">
+オーナー側、ダイアログ側どちらのチェックボックスのチェックを変更しても、他方に反映されます。
+<P>
+<BR CLEAR="left"><BR>
+<HR>
+[<A HREF="../index_form.html">C# フォーム Index</A>]
+[<A HREF="../index_cs.html">C# コンソール Index</A>]
+[<A HREF="../index.html">総合Index</A>]
+[<A HREF="form_42.htm">Previous Chapter</A>]
+[<A HREF="form_44.htm">Next Chapter</A>]
+<P>
+<ADDRESS>
+Update 27/Nov/2006 By Y.Kumei<BR>
+<FONT COLOR="#FF0000">
+当ホーム・ページの一部または全部を無断で複写、複製、
+転載あるいはコンピュータ等のファイルに保存することを禁じます。
+</FONT>
+</ADDRESS>
+</BODY>
+</HTML>

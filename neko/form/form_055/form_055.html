@@ -1,0 +1,136 @@
+<HTML>
+<!--        form_55.htm        -->
+<!--        2007/02/10       -->
+<HEAD>
+<LINK REL=STYLESHEET HREF="../neko.css" TYPE="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>第５５章</TITLE>
+<base href='http://www.kumei.ne.jp/c_lang/form/'>
+<meta http-equiv='Content-Type'content='text/htm; charset=UTF-8'>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<CENTER>
+<H1>第５５章 ステータスバーにアイコンを付ける</H1>
+</CENTER>
+<HR>
+<IMG SRC="../img/my10x.gif" ALIGN="left">
+ステータスバー(正確にはステータスバー・パネル)にアイコンを表示するにはどうしたらよいでしょうか。
+<P>
+<BR CLEAR="left"><BR>
+これは、簡単です。<P>
+StatusbarクラスのIconプロパティに表示したいアイコンを指定します。テキストと同時に表示すると、テキストの左側にアイコンが表示されます。<P>
+さて、アイコンはIconクラスから作成します。<P>
+Iconクラスの継承関係は次のようになっています。
+<PRE>
+System.Object 
+   System.MarshalByRefObject 
+    System.Drawing.Icon
+</PRE>
+Iconクラスのコンストラクタは、オーバーロードされた９つのバージョンがあります。
+ここでは、アイコンをリソースとして埋め込むので、次のバージョンを知っているだけで充分です。
+<PRE>
+public Icon (
+	Type type,
+	string resource
+)
+</PRE>
+typeは、リソースを検索するアセンブリのTypeです。<P>
+resourceは、リソース名です。<P>
+さて、アイコンをリソースとして埋め込むのは、イメージの時と同じです。<P>
+<PRE>
+１．ソリューション・エクスプローラでプロジェクト名を右クリック
+２．「追加」「新しい項目」で、追加したいアイコンを選択
+３．追加したアイコンを右クリックして、「プロパティ」を選択
+４．ビルドアクションを「埋め込まれたリソース」にします。
+</PRE>
+たったこれだけです。<P>
+リソース名は、「名前空間名.アイコンのファイル名」となります。デフォルトでは名前空間名はプロジェクト名と同じになります。<P>
+これで、アイコンオブジェクトを作成できるようになりました。次のような感じで使います。
+<PRE>
+Icon icon = new Icon(GetType(), "status04.icon1.ico");
+</PRE>
+これは、status04名前空間のicon1.icoアイコンのオブジェクトを生成しています。<P>
+Iconクラスの便利なメソッドにToBitmapメソッドがあります。その名の通り、アイコンをBitmapに変換してくれます。
+<PRE>
+public Bitmap ToBitmap ()
+</PRE>
+では、簡単なサンプルを見てみましょう。
+<PRE>
+// status04.cs
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+class status04 : Form
+{
+    StatusBar sb;
+    StatusBarPanel sbp0, sbp1, sbp2;
+
+    public static void Main()
+    {
+        status04 fm = new status04();
+        Application.Run(fm);
+    }
+
+    public status04()
+    {
+        Icon icon = new Icon(GetType(), "status04.icon1.ico");
+
+        Text = "猫でもわかるC#プログラミング";
+        BackColor = SystemColors.Window;
+        Icon = icon;
+        BackgroundImage = icon.ToBitmap();
+
+        sb = new StatusBar();
+        sb.Parent = this;
+        sb.ShowPanels = true;
+
+        sbp0 = new StatusBarPanel();
+        sbp1 = new StatusBarPanel();
+        sbp2 = new StatusBarPanel();
+
+        sbp0.AutoSize = StatusBarPanelAutoSize.Contents;
+        sbp0.Alignment = HorizontalAlignment.Center;
+
+        sbp1.AutoSize = StatusBarPanelAutoSize.Spring;
+        sbp1.Alignment = HorizontalAlignment.Center;
+
+        sbp2.AutoSize = StatusBarPanelAutoSize.Contents;
+        sbp2.Alignment = HorizontalAlignment.Center;
+
+        sbp0.Icon = icon;
+        sbp1.Icon = icon;
+        sbp2.Icon = icon;
+        sbp1.Text = Text;
+
+        sb.Panels.Add(sbp0);
+        sb.Panels.Add(sbp1);
+        sb.Panels.Add(sbp2);
+    }
+}
+</PRE>
+ほとんどすべてのことは、status04クラスのコンストラクタで行ってます。<P>
+sbp1には、アイコンとテキストを指定してる点に注意してください。<P>
+では、実行結果を見てみましょう。<P>
+<IMG SRC="../img/form5501.gif" ALIGN="left">
+どこも、猫だらけですね・・・<P>
+メイン・フォームのアイコンも変更されている点に注意してください。
+<P>
+<BR CLEAR="left"><BR>
+<HR>
+[<A HREF="../index_form.html">C# フォーム Index</A>]
+[<A HREF="../index_cs.html">C# コンソール Index</A>]
+[<A HREF="../index.html">総合Index</A>]
+[<A HREF="form_54.htm">Previous Chapter</A>]
+[<A HREF="form_56.htm">Next Chapter</A>]
+<P>
+<ADDRESS>
+Update 10/Feb/2007 By Y.Kumei<BR>
+<FONT COLOR="#FF0000">
+当ホーム・ページの一部または全部を無断で複写、複製、
+転載あるいはコンピュータ等のファイルに保存することを禁じます。
+</FONT>
+</ADDRESS>
+</BODY>
+</HTML>

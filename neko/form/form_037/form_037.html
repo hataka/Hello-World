@@ -1,0 +1,206 @@
+<HTML>
+<!--        form_37.htm        -->
+<!--        2006/11/21       -->
+<HEAD>
+<LINK REL=STYLESHEET HREF="../neko.css" TYPE="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>第３７章</TITLE>
+<base href='http://www.kumei.ne.jp/c_lang/form/'>
+<meta http-equiv='Content-Type'content='text/htm; charset=UTF-8'>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<CENTER>
+<H1>第３７章 イメージを持つチェックボックス</H1>
+</CENTER>
+<HR>
+<IMG SRC="../img/my10x.gif" ALIGN="left">
+チェックボックスにイメージを持たせるのは簡単です。
+<P>
+<BR CLEAR="left"><BR>
+CheckBoxクラスのImageプロパティにBitmapオブジェクトを割り当てるだけです。<P>
+イメージの配置を指定するにはButtonBase.ImageAlignプロパティを設定します。
+<PRE>
+public ContentAlignment ImageAlign { get; set; }
+</PRE>
+ContentAlignment列挙体についてはすでに、<A HREF="form_16.htm">第１６章</A>で出てきています。<P>
+チェックボックスに、イメージとテキストの両方を表示する場合、その配置が問題となります。これは、ButtonBase.TextImageRelationプロパティを設定します。(C#2.0で追加)
+<PRE>
+public TextImageRelation TextImageRelation { get; set; }
+</PRE>
+TextImageRelation列挙体のメンバと意味は次の通りです。<P>
+<TABLE BORDER="1">
+<TH BGCOLOR="#FFFF00">メンバ</TH><TH BGCOLOR="#FFFF00">意味</TH><TR>
+<TD>ImageAboveText</TD><TD>イメージはテキストの上部に表示</TD><TR>
+<TD>ImageBeforeText</TD><TD>イメージはテキストの前(左側)に表示</TD><TR>
+<TD>Overlay</TD><TD>テキストとイメージは同じスペースを共有</TD><TR>
+<TD>TextAboveImage</TD><TD>テキストがイメージの上部に表示</TD><TR>
+<TD>TextBeforeImage</TD><TD>テキストがイメージの前(左側)に表示</TD>
+</TABLE><P>
+さて、FormクラスにはPaddingというプロパティが存在します。これは、Controlクラスから継承されてきています。
+<PRE>
+public Padding Padding { get; set; }
+</PRE>
+プロパティ値のPaddingは、構造体です。<P>
+Paddingは、コンテナに詰め物をして、その内側にコントロールを配置するイメージです。これに対して、Marginは、コントロールの外側にスペースを作ってコンテナに配置するイメージです。<P>
+Form.Marginは、
+<PRE>
+public Padding Margin { get; set; }
+</PRE>
+となっており、プロパティ値はPadding構造体です。この構造体もC#2.0から追加された物です。<P>
+コンストラクタは、オーバーロードされた２つのバージョンがあります。
+<PRE>
+public Padding (
+	int all
+)
+</PRE>
+allは、すべての端の埋め込みに使用するピクセル数です。
+<PRE>
+public Padding (
+	int left,
+	int top,
+	int right,
+	int bottom
+)
+</PRE>
+left,top,right,bottomはそれぞれの端の埋め込みに使用するピクセル数です。<P>
+Padding構造体の主なプロパティには、次のような物があります。<P>
+<TABLE BORDER="1">
+<TH BGCOLOR="#FFFF00">プロパティ</TH><TH BGCOLOR="#FFFF00">プロパティ値</TH>
+<TH BGCOLOR="#FFFF00">意味</TH><TR>
+<TD>All</TD><TD>int</TD><TD>すべての端の埋め込み値の取得・設定</TD><TR>
+<TD>Bottom</TD><TD>int</TD><TD>下端の埋め込み値の取得・設定</TD><TR>
+<TD>Horizontal</TD><TD>int</TD><TD>右端と左端の埋め込み値の合計の取得</TD><TR>
+<TD>Left</TD><TD>int</TD><TD>左端の埋め込み値の取得・設定</TD><TR>
+<TD>Right</TD><TD>int</TD><TD>右端の埋め込み値の取得・設定</TD><TR>
+<TD>Size</TD><TD>Size</TD><TD>埋め込み情報をSystem.Drawing.Size形式で取得</TD><TR><TD>Top</TD><TD>int</TD><TD>上端の埋め込み値の取得・設定</TD><TR>
+<TD>Vertical</TD><TD>int</TD><TD>上端と下端の埋め込み値の合計の取得</TD>
+</TABLE><P>
+サンプルのプログラムを作る前準備として、適当なイメージを用意しておいてください。
+ここでは、gifファイルを用意してみました。<P>
+<TABLE BORDER="1">
+<TH BGCOLOR="#FF00FF">イメージ</TH><TH BGCOLOR="#FF00FF">ファイル名</TH><TR>
+<TD><IMG SRC="../img/form3701.gif"></TD><TD>file.gif</TD><TR>
+<TD><IMG SRC="../img/form3702.gif"></TD><TD>open.gif</TD><TR>
+<TD><IMG SRC="../img/form3703.gif"></TD><TD>save.gif</TD><TR>
+<TD><IMG SRC="../img/form3704.gif"></TD><TD>exit.gif</TD>
+</TABLE><P>
+これらのイメージを、プロジェクトに埋め込んでおいてください。<P>
+では、サンプルのプログラムを見てみましょう。
+<PRE>
+// bmpchk01.cs
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+class bmpchk01 : Form
+{
+    public static void Main()
+    {
+        Application.Run(new bmpchk01());
+    }
+
+    public bmpchk01()
+    {
+        Text = "猫でもわかるC#プログラミング";
+        
+        BackColor = SystemColors.Window;
+        Padding = new Padding(10);
+
+        Bitmap bmpFile, bmpOpen, bmpSave, bmpExit;
+
+        bmpFile = new Bitmap(GetType(), "bmpchk01.file.gif");
+        bmpOpen = new Bitmap(GetType(), "bmpchk01.open.gif");
+        bmpSave = new Bitmap(GetType(), "bmpchk01.save.gif");
+        bmpExit = new Bitmap(GetType(), "bmpchk01.exit.gif");
+
+        MyCheckBox mcb3 = new MyCheckBox(this, bmpExit, "Exit");
+        MyCheckBox mcb2 = new MyCheckBox(this, bmpSave, "Save");
+        MyCheckBox mcb1 = new MyCheckBox(this, bmpOpen, "Open");
+        MyCheckBox mcb0 = new MyCheckBox(this, bmpFile, "File");
+    }
+}
+
+class MyCheckBox : CheckBox
+{
+    public MyCheckBox(Form f, Bitmap bmp, string str)
+    {
+        Parent = f;
+        BackColor = SystemColors.Control;
+        Dock = DockStyle.Top;
+        Image = bmp;
+        ImageAlign = ContentAlignment.MiddleCenter;
+        Height = bmp.Height;
+        Text = str;
+        TextImageRelation = TextImageRelation.ImageBeforeText;
+    }
+
+    protected override void OnMouseHover(EventArgs e)
+    {
+        base.OnMouseHover(e);
+        Cursor = Cursors.Hand;
+        BackColor = Color.Red;
+    }
+
+    protected override void OnMouseLeave(EventArgs eventargs)
+    {
+        base.OnMouseLeave(eventargs);
+        Cursor = Cursors.Arrow;
+        BackColor = SystemColors.Control;
+    }
+
+    protected override void OnCheckedChanged(EventArgs e)
+    {
+        base.OnCheckedChanged(e);
+        int n = Parent.Controls.Count;
+        CheckBox[] cb = new CheckBox[n];
+        string str = "";
+
+        for (int i = 0; i < n; i++)
+        {
+            cb[i] = (CheckBox)Parent.Controls[i];
+            if (cb[i].Checked)
+                str += (cb[i].Text + " ");
+        }
+
+        if (str != "")
+            str = "現在選択されているのは" + str + "です";
+        else
+            str = "現在選択されている項目はありません";
+
+        Parent.Text = str;
+        
+    }
+}
+</PRE>
+親フォームのPaddingをPadding(10)で設定して、CheckBoxのDockをDockStyle.Topに設定して、次々にドッキングさせています。今までは、Locationプロパティを設定していましたね。<P>
+実行結果は、次のようになります。Paddingの意味をはっきりさせるために、CheckBoxのBackColorをSystemColors.Controlに設定しています。<P>
+<IMG SRC="../img/form3705.gif" ALIGN="left">
+フォームのクライアント領域の左右と上にPaddingが存在することがわかります。
+<P>
+<BR CLEAR="left"><BR>
+<IMG SRC="../img/form3706.gif" ALIGN="left">
+マウスでポイントすると、CheckBoxの背景色が赤になります。
+<P>
+<BR CLEAR="left"><BR>
+<IMG SRC="../img/form3707.gif" ALIGN="left">
+親フォームのサイズを変更しても、コントロールは自動的に伸縮しています。<P>
+選択されている項目は、タイトルバーに表示されています。
+<P>
+<BR CLEAR="left"><BR>
+<HR>
+[<A HREF="../index_form.html">C# フォーム Index</A>]
+[<A HREF="../index_cs.html">C# コンソール Index</A>]
+[<A HREF="../index.html">総合Index</A>]
+[<A HREF="form_36.htm">Previous Chapter</A>]
+[<A HREF="form_38.htm">Next Chapter</A>]
+<P>
+<ADDRESS>
+Update 21/Nov/2006 By Y.Kumei<BR>
+<FONT COLOR="#FF0000">
+当ホーム・ページの一部または全部を無断で複写、複製、
+転載あるいはコンピュータ等のファイルに保存することを禁じます。
+</FONT>
+</ADDRESS>
+</BODY>
+</HTML>

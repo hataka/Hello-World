@@ -1,0 +1,210 @@
+<HTML>
+<!--        form_27.htm        -->
+<!--        2006/11/11       -->
+<HEAD>
+<LINK REL=STYLESHEET HREF="../neko.css" TYPE="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>第２７章 </TITLE>
+<base href='http://www.kumei.ne.jp/c_lang/form/'>
+<meta http-equiv='Content-Type'content='text/htm; charset=UTF-8'>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<CENTER>
+<H1>第２７章 状況に応じて変化するメニュー</H1>
+</CENTER>
+<HR>
+<IMG SRC="../img/my10x.gif" ALIGN="left">
+状況に応じて、メニュー項目が変化してほしい場合があります。
+<P>
+<BR CLEAR="left"><BR>
+この章では、メニューによりクライアント領域に表示されるイメージを変更するプログラムを作ります。まずは、次のようなgif画像を用意します。<P>
+<TABLE BORDER="2">
+<TD><IMG SRC="../img/form2701.gif"></TD><TD><IMG SRC="../img/form2702.gif"></TD><TR>
+<TD>cat1.gif</TD><TD>cat2.gif</TD>
+</TABLE><P>
+まず、できあがりのプログラムの動作を見てみましょう。<P>
+<IMG SRC="../img/form2703.gif" ALIGN="left">
+クライアント領域に画像が表示されていないとき、メニューの「ファイル」をクリックすると「猫１」「猫２」「終了」のメニュー項目が見えます。
+<P>
+<BR CLEAR="left"><BR>
+<IMG SRC="../img/form2704.gif" ALIGN="left">
+メニューから「猫１」を選択すると、cat1.gifの画像がクライアント領域に表示されます。その後、メニューの「ファイル」をクリックすると、「猫２」「画像なし」「終了」のメニュー項目が見えます。「猫１」の画像が見えているのに、メニューに「猫１」があっても意味が無いので、「猫１」は非表示になっています。代わりに「画像なし」のメニュー項目が出てきました。
+<P>
+<BR CLEAR="left"><BR>
+<IMG SRC="../img/form2705.gif" ALIGN="left">
+画像２が表示されているときは、メニュー項目「画像２」が非表示になっています。
+<P>
+<BR CLEAR="left"><BR>
+では、どのようにして実現するかを見ていきましょう。<P>
+まず、メニュー項目を非表示にするには、MenuItemのVisibleプロパティをfalseに設定します。
+<PRE>
+public bool Visible { get; set; }
+</PRE>
+では、いつMenuItem.Visibleをfalseにすれば、よいのでしょうか。<P>
+これは、「ファイル」メニュー項目に、ポインタが来たときに、行うのが最適です。<P>
+メニュー項目にポインタが置かれると、MenuItem.Selectイベントが発生します。
+<PRE>
+public event EventHandler Select
+</PRE>
+これで、大まかな仕組みはわかったと思います。<P>
+で、画像をクライアント領域に表示するにはどうしたらよいのでしょうか。実は、これはすでにもう<A HREF="form_25.htm">第２５章</A>でやっています。Graphics.DrawImageメソッドを使えばよいですね。描画のタイミングは、もちろんPaintイベントが発生したときです。<P>
+では、プログラムを見てみましょう。
+<PRE>
+// menuselect01.cs
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+class menuselect01 : Form
+{
+    Bitmap bmp, bmp1, bmp2;
+    int nBmp;
+    MenuItem miCat1, miCat2, miZero; 
+
+    public static void Main()
+    {
+        menuselect01 ms = new menuselect01();
+        Application.Run(ms);
+    }
+
+    public menuselect01()
+    {
+        Text = "猫でもわかるC#プログラミング";
+        BackColor = SystemColors.Window;
+
+        bmp1 = new Bitmap(GetType(), "menuselect01.cat1.gif");
+        bmp2 = new Bitmap(GetType(), "menuselect01.cat2.gif");
+        bmp = null;
+        nBmp = 0;
+
+        miCat1 = new MenuItem("猫１");
+        miCat1.Click += new EventHandler(miCat1_Click);
+
+        miCat2 = new MenuItem("猫２");
+        miCat2.Click += new EventHandler(miCat2_Click);
+
+        miZero = new MenuItem("画像なし");
+        miZero.Click += new EventHandler(miZero_Click);
+
+        MenuItem miLine = new MenuItem("-");
+
+        MenuItem miExit = new MenuItem("終了(&X)");
+        miExit.Click += new EventHandler(miExit_Click);
+
+        MenuItem miFile = new MenuItem("ファイル(&F)",
+            new MenuItem[] { miCat1, miCat2, miZero, miLine, miExit });
+        miFile.Select += new EventHandler(miFile_Select);
+
+        Menu = new MainMenu(new MenuItem[] { miFile });
+
+    }
+
+    void miFile_Select(object sender, EventArgs e)
+    {
+        miCat1.Visible = true;
+        miCat2.Visible = true;
+        miZero.Visible = true;
+
+        switch (nBmp)
+        {
+            case 0:
+                miZero.Visible = false;
+                break;
+            case 1:
+                miCat1.Visible = false;
+                break;
+            case 2:
+                miCat2.Visible = false;
+                break;
+        }
+    }
+
+    protected override void OnPaint(PaintEventArgs e)
+    {
+        base.OnPaint(e);
+        if (nBmp != 0)
+        {
+            Graphics g = e.Graphics;
+            
+            Rectangle rc = new Rectangle();
+            rc.X = (ClientRectangle.Width - bmp.Width) / 2;
+            rc.Y = (ClientRectangle.Height - bmp.Height) / 2;
+            rc.Width = bmp.Width;
+            rc.Height = bmp.Height;
+            g.DrawImage(bmp, rc);
+        }
+    }
+
+    protected override void OnSizeChanged(EventArgs e)
+    {
+        base.OnSizeChanged(e);
+        Invalidate();
+    }
+
+    void miCat1_Click(object sender, EventArgs e)
+    {
+        bmp = bmp1;
+        nBmp = 1;
+        Invalidate();
+    }
+
+    void miCat2_Click(object sender, EventArgs e)
+    {
+        bmp = bmp2;
+        nBmp = 2;
+        Invalidate();
+    }
+
+    void miZero_Click(object sender, EventArgs e)
+    {
+        nBmp = 0;
+        Invalidate();
+    }
+
+    void miExit_Click(object sender, EventArgs e)
+    {
+        Close();
+    }
+}
+</PRE>
+Mainメソッドの存在するmenuselect01クラスは、Formクラスを継承しています。<P>
+bmp, bmp1, ...などのインスタンスフィールドが存在することに注意してください。
+これは、このクラスのどのメソッドからもこれらを参照したり、書き込んだりできるようにするためです。(あるメソッドが書き込んで、他のメソッドが参照したりする)<P>
+Mainメソッドは、いつも通り簡単な物です。<P>
+コンストラクタでは、Bitmapオブジェクトを作成し、その参照をインスタンスフィールドに代入しています。bmpには、メニューで選択した内容に応じてbmp1やbm2の値が代入されます。初期段階ではnullにしています。<P>
+nBmpには、現在どのイメージが表示してあるかを示す値が代入されます。0は何も表示されていない、1はcat1.gifのイメージが表示されている、2はcat2.gifのイメージが表示されていることを表しています。<P>
+次に、今まで通りメニューを作成しています。<P>
+「ファイル」メニュー項目に対して、これがポイントされた時に発生するSelectイベントに対するハンドラがインストールされている点に注意してください。<P>
+miFile_Selectメソッドは、「ファイル」メニュー項目がポイントされた時に、呼び出されます。<P>
+ここでは、いったん「猫１」「猫２」「画像なし」のメニュー項目を「表示」に設定してその後、nBmpに応じて非表示項目を決めています。<P>
+OnPaintメソッドでは、実際のイメージ描画を行っています。nBmpが0でないときは、bmpを表示しています。bmpの中身は、メニューからどの画像を選択したかで異なっています。
+また、イメージの表示がクライアント領域の中央に来るようにしてあります。ClientRectangleは、Formクラスのプロパティで、クライアント領域を表す四角形を取得します。
+<PRE>
+public Rectangle ClientRectangle { get; }
+</PRE>
+<P>フォームのサイズが変更されたとき(OnSizeChanged)は、Invalidateメソッドを呼んでいます。これで、サイズ変更時にPaintイベントが発生して画像がクライアント領域の中央になるように再描画が起こります。
+OnSizeChangedメソッドはSystem.Windows.Forms名前空間で定義されています。
+<PRE>
+protected virtual void OnSizeChanged (
+	EventArgs e
+)
+</PRE>
+xxx_Clickは、それぞれのメニュー項目がクリックされたときに呼び出される自作ハンドラです。「猫１」メニュー項目がクリックされたら、bmpをbmp1に設定します。そして、nBmpを1にします。そして、Invalidateメソッドを呼び出すと、再描画が起こりクライアント領域にcat1.gifのイメージが表示されます。<P>
+ひとつ、ひとつ見ていくと大して難しくないことがわかりますね。
+<HR>
+[<A HREF="../index_form.html">C# フォーム Index</A>]
+[<A HREF="../index_cs.html">C# コンソール Index</A>]
+[<A HREF="../index.html">総合Index</A>]
+[<A HREF="form_26.htm">Previous Chapter</A>]
+[<A HREF="form_28.htm">Next Chapter</A>]
+<P>
+<ADDRESS>
+Update 11/Nov/2006 By Y.Kumei<BR>
+<FONT COLOR="#FF0000">
+当ホーム・ページの一部または全部を無断で複写、複製、
+転載あるいはコンピュータ等のファイルに保存することを禁じます。
+</FONT>
+</ADDRESS>
+</BODY>
+</HTML>

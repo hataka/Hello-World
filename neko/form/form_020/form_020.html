@@ -1,0 +1,108 @@
+<HTML>
+<!--        form_20.htm        -->
+<!--        2006/11/04       -->
+<HEAD>
+<LINK REL=STYLESHEET HREF="../neko.css" TYPE="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>第２０章 </TITLE>
+<base href='http://www.kumei.ne.jp/c_lang/form/'>
+<meta http-equiv='Content-Type'content='text/htm; charset=UTF-8'>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<CENTER>
+<H1>第２０章 ショートカット・キーを持つメニュー</H1>
+</CENTER>
+<HR>
+<IMG SRC="../img/my10x.gif" ALIGN="left">
+メニュー項目のテキストで、「開く(O)... Ctrl + O」というような表示がよく見られます。
+<P>
+<BR CLEAR="left"><BR>
+この、「Ctrl + O」のことをショーカット・キーといいます。Win32APIのプログラミングでは、「O」のことをショートカット・キー、「Ctrl + O」のことをアクセラレータ・キーと呼んでいました。しはしば、これらは混同して使われていましたが、C#では、Ctrl + Oのことを正式にショートカット・キーというように決まったようです。(この名前の列挙体までできてしまった!!)<P>
+従来のショートカット・キーとアクセラレータ・キーの違いは、何かというとショートカット・キーでは、そのメニュー項目が表示されていないと効果が無く、アクセラレータ・キーでは、その項目が表示されていなくても効果がある、ということです。これは、普通にアプリケーションを使っていると自然にわかってきますね。<P>
+さて、ショートカット・キーを設定するには、MenuItemクラスのShortcutプロパティにShortcut列挙体を指定します。
+<PRE>
+public Shortcut Shortcut { get; set; }
+</PRE>
+Shortcutのプロパティ値はShortcut列挙体です。この列挙体はメンバが大量にいます。
+しかし、単純なのですぐわかります。CtrlAメンバはCtrl + Aを表します。まんまです。
+Ctrl + Shift + Xの組み合わせのメンバもあります。<P>
+コンストラクタで、ショートカットも設定してしまうのが簡単です。MenuItemクラスのコンストラクタで、ショートカット設定バージョンは次のようなものです。
+<PRE>
+public MenuItem (
+	string text,
+	EventHandler onClick,
+	Shortcut shortcut
+)
+</PRE>
+shortcutに、Shortcut列挙体のメンバの一つを指定します。<P>
+では、サンプルを見てみましょう。
+<PRE>
+// menu03.cs
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+class menu03
+{
+    public static void Main()
+    {
+        MyForm mf = new MyForm();
+        Application.Run(mf);
+    }
+}
+
+class MyForm : Form
+{
+    public MyForm()
+    {
+        Text = "猫でもわかるプログラミング";
+        BackColor = SystemColors.Window;
+
+        MenuItem miOpen = new MenuItem("開く(&O)",
+            new EventHandler(miOpenClick),
+            Shortcut.CtrlO);
+        MenuItem miAllSave = new MenuItem("すべてを保存(&L)",
+            new EventHandler(miAllSaveClick),
+            Shortcut.CtrlShiftS);
+
+        MenuItem miFile = new MenuItem("ファイル(&F)",
+            new MenuItem[] { miOpen, miAllSave });
+
+        Menu = new MainMenu(new MenuItem[] { miFile });
+    }
+
+    void miOpenClick(object sender, EventArgs e)
+    {
+        MessageBox.Show("「開く」が選択されました",
+            Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+    }
+
+    void miAllSaveClick(object sender, EventArgs e)
+    {
+        MessageBox.Show("「すべてを保存」が選択されました",
+            Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+    }
+}
+</PRE>
+実行結果は、次のようになります。<P>
+<IMG SRC="../img/form2001.gif" ALIGN="left">
+メニュー項目のテキストの「Ctrl + O」などは、自動的に付加されます。
+<P>
+<BR CLEAR="left"><BR>
+<HR>
+[<A HREF="../index_form.html">C# フォーム Index</A>]
+[<A HREF="../index_cs.html">C# コンソール Index</A>]
+[<A HREF="../index.html">総合Index</A>]
+[<A HREF="form_19.htm">Previous Chapter</A>]
+[<A HREF="form_21.htm">Next Chapter</A>]
+<P>
+<ADDRESS>
+Update 04/Nov/2006 By Y.Kumei<BR>
+<FONT COLOR="#FF0000">
+当ホーム・ページの一部または全部を無断で複写、複製、
+転載あるいはコンピュータ等のファイルに保存することを禁じます。
+</FONT>
+</ADDRESS>
+</BODY>
+</HTML>

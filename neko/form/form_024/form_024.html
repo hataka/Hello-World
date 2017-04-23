@@ -1,0 +1,182 @@
+<HTML>
+<!--        form_24.htm        -->
+<!--        2006/11/08       -->
+<HEAD>
+<LINK REL=STYLESHEET HREF="../neko.css" TYPE="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>第２４章 </TITLE>
+<base href='http://www.kumei.ne.jp/c_lang/form/'>
+<meta http-equiv='Content-Type'content='text/htm; charset=UTF-8'>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<CENTER>
+<H1>第２４章 どのボタンを押しても出てくるメニュー</H1>
+</CENTER>
+<HR>
+<IMG SRC="../img/my10x.gif" ALIGN="left">
+<A HREF="form_23.htm">前章</A>では、右クリックで出てくるコンテキスト・メニューをやりました。この章では、どのボタンを押しても出てくるメニューを作ります。
+<P>
+<BR CLEAR="left"><BR>
+はっきり言って<FONT COLOR="FF0000" SIZE="5">邪道</FONT>です。<P>
+しかし、C#のプログラミングの仕組みを知る上では多少は役立つかもしれません。<P>
+クライアント領域でマウスがクリック(どのボタンでもよい)されると、MouseDownイベントが発生します。これを捕まえればよいですね。<P>
+では、コンテキストメニューを表示するにはどうすればよいでしょうか。<P>
+これには、ContextMenuクラスのShowメソッドを使います。
+<PRE>
+public void Show (
+	Control control,
+	Point pos
+)
+public void Show (
+	Control control,
+	Point pos,
+	LeftRightAlignment alignment
+)
+</PRE>
+２つのオーバーロード・バージョンがあります。<P>
+controlは、メニューを関連づけるControlを指定します。<P>
+posには、メニューを表示するPointを指定します。<P>
+alignmentには、オブジェクトがPointの左、右どちらに配置されるかを指定します。<P>
+LeftRightAlignment列挙体のメンバは、次の通りです。<P>
+<TABLE BORDER="1">
+<TH BGCOLOR="#FFFF00">メンバ</TH><TH BGCOLOR="#FFFF00">意味</TH><TR>
+<TD>Left</TD><TD>オブジェクトが参照ポイントの左側に配置</TD><TR>
+<TD>Right</TD><TD>右側に配置</TD>
+</TABLE><P>
+さて、マウスのボタンが押された座標はどうすればわかるのでしょうか。
+これには、MouseDownイベントに関連づけられたControl.OnMouseDownメソッドの引数を調べるとわかります。
+<PRE>
+protected virtual void OnMouseDown (
+	MouseEventArgs e
+)
+</PRE>
+このメソッドを、オーバーライドするとMouseDownイベントの処理ができます。<P>
+MouseEventArgsクラスのX,Yプロパティがマウスイベント発生時のX,Y座標です。また、
+Buttonプロパティは、どのボタンが押されたかを表します。
+<PRE>
+public MouseButtons Button { get; }
+</PRE>
+MouseButtons列挙体のメンバと意味は次の通りです。<P>
+<TABLE BORDER="1">
+<TH BGCOLOR="#FFFF00">メンバ</TH><TH BGCOLOR="#FFFF00">意味</TH><TR>
+<TD>Left</TD><TD>マウスの左ボタンが押された</TD><TR>
+<TD>Middle</TD><TD>中央ボタン(ホィール)が押された</TD><TR>
+<TD>None</TD><TD>ボタンは押されていない</TD><TR>
+<TD>Right</TD><TD>右ボタンが押された</TD><TR>
+<TD>XButton1</TD><TD>1番目のXButtonが押された</TD><TR>
+<TD>XButton2</TD><TD>2番目のXButtonが押された</TD>
+</TABLE><P>
+
+Xボタンというのは、マウスの側面についていて、通常ブラウザの「進む」「戻る」の機能が割り振られています。<P>
+では、サンプルを見てみましょう。いずれかのボタンが押されると、メニューが出現します。また、クライアント領域にどのボタンが押されたかが表示されます。
+<PRE>
+// contextmenu02.cs
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+class contextmenu02 : Form
+{
+    ContextMenu cm;
+    string str;
+
+    public static void Main()
+    {
+        contextmenu02 c2 = new contextmenu02();
+        Application.Run(c2);
+    }
+
+    // コンストラクタ
+    public contextmenu02()
+    {
+        Text = "猫でもわかるC#";
+        BackColor = SystemColors.Window;
+
+        cm = new ContextMenu();
+        //ContextMenu = cm;
+        //ContextMenuプロパティにcmを設定していない!!
+
+        MenuItem miFile = new MenuItem("ファイル(&F)");
+        cm.MenuItems.Add(miFile);
+
+        MenuItem miExit = new MenuItem("終了(&X)");
+        miExit.Click += new EventHandler(miExit_Click);
+        miFile.MenuItems.Add(miExit);
+    }
+
+    // メニューの「終了」が選択された
+    void miExit_Click(object sender, EventArgs e)
+    {
+        Close();   
+    }
+
+    // Paintイベントが発生した
+    protected override void OnPaint(PaintEventArgs e)
+    {
+        base.OnPaint(e);
+
+        Graphics g = e.Graphics;
+        Font f = new Font("ＭＳ ゴシック", 16);
+        g.DrawString(str, f, Brushes.Black, new PointF(10F, 10F)); 
+    }
+
+    // FormClosingイベントが発生した
+    protected override void OnFormClosing(FormClosingEventArgs e)
+    {
+        base.OnFormClosing(e);
+
+        DialogResult dr;
+
+        dr = MessageBox.Show("終了してもよいですか",
+            "猫C#",
+            MessageBoxButtons.YesNo,
+            MessageBoxIcon.Question);
+        if (dr == DialogResult.Yes)
+            e.Cancel = false;
+        else
+            e.Cancel = true;
+    }
+
+    // マウスボタン(どのボタンでもよい)が押下された
+    protected override void OnMouseDown(MouseEventArgs e)
+    {
+        base.OnMouseDown(e);
+
+        if (e.Button == MouseButtons.Left)
+            str = "左ボタンが押されました";
+        else if (e.Button == MouseButtons.Right)
+            str = "右ボタンが押されました";
+        else if (e.Button == MouseButtons.Middle)
+            str = "ホィールが押されました";
+        else
+            str = "その他のボタンが押されました";
+
+        // Paintイベントを発生させてstrをクライアント領域に再描画
+        Invalidate();
+
+        cm.Show(this, new Point(e.X, e.Y));
+    }
+}
+</PRE>
+コメントを見ながら、プログラムを眺めていくと大して難しくないことがわかりますね。
+<P>
+<IMG SRC="../img/form2401.gif" ALIGN="left">
+<P>
+<BR CLEAR="left"><BR>
+<HR>
+[<A HREF="../index_form.html">C# フォーム Index</A>]
+[<A HREF="../index_cs.html">C# コンソール Index</A>]
+[<A HREF="../index.html">総合Index</A>]
+[<A HREF="form_23.htm">Previous Chapter</A>]
+[<A HREF="form_25.htm">Next Chapter</A>]
+<P>
+<ADDRESS>
+Update 08/Nov/2006 By Y.Kumei<BR>
+<FONT COLOR="#FF0000">
+当ホーム・ページの一部または全部を無断で複写、複製、
+転載あるいはコンピュータ等のファイルに保存することを禁じます。
+</FONT>
+</ADDRESS>
+</BODY>
+</HTML>

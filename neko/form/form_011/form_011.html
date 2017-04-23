@@ -1,0 +1,118 @@
+<HTML>
+<!--        form_11.htm        -->
+<!--        2006/10/26       -->
+<HEAD>
+<LINK REL=STYLESHEET HREF="../neko.css" TYPE="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>第１１章 </TITLE>
+<base href='http://www.kumei.ne.jp/c_lang/form/'>
+<meta http-equiv='Content-Type'content='text/htm; charset=UTF-8'>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<CENTER>
+<H1>第１１章 ボタンの基礎</H1>
+</CENTER>
+<HR>
+<IMG SRC="../img/my10x.gif" ALIGN="left">
+フォームにボタンをつけてみます。
+<P>
+<BR CLEAR="left"><BR>
+プッシュボタン、ラジオボタン、チェックボックスなどのようにフォーム部品となるものをコントロールといいます。これらのコントロールは、いずれかのフォームの子供として扱われます。<P>
+子供は、親からはみ出すことはありません。(はみ出した部分は表示されない。クリッピングといいます)<P>
+
+この章では、プッシュボタンの基礎について解説します。<P>
+プッシュボタンは、Buttonクラスのオブジェクトです。Buttonクラスは、System.Windows.Forms
+名前空間で定義されており、ButtonBaseクラスから派生しています。
+<PRE>
+System.Object 
+   System.MarshalByRefObject 
+     System.ComponentModel.Component 
+       System.Windows.Forms.Control 
+         System.Windows.Forms.ButtonBase 
+          System.Windows.Forms.Button
+</PRE>
+ボタンオブジェクトを作成したら、親を指定する必要があります。これには、ButtonクラスのParentプロパティを使います(Controlクラスから継承されている)。
+<PRE>
+public Control Parent { get; set; }
+</PRE>
+Parentには、Control型の参照を指定するのですが、Controlクラスの子孫のFormの参照を指定しても一向にかまいません。<P>
+また、ボタンに表示するテキストは、Textプロパティで指定します。(ButtonBaseクラスからの継承で、ButtonBaseクラスでControl.Textをオーバーライドしている)
+<PRE>
+public override string Text { get; set; }
+</PRE>
+ボタンの表示位置は、ボタンの左上隅がフォームのクライアント座標のどこにくるかで指定します。これには、Locationプロパティを利用します。(Controlクラスからの継承)
+<PRE>
+public Point Location { get; set; }
+</PRE>
+HeightやWidthプロパティを使ってボタンの高さ、幅を設定・取得することもできます。
+幅・高さを指定しないでボタンを作るとデフォルトの大きさになります。<P>
+次に、ボタンがクリックされるとClickイベントが発生するので、これに応答するハンドラーをインストールします。今までと全く同じ方法です。
+<PRE>
+Click += new EventHandler(メソッド名);
+</PRE>
+メソッドの名前は、あとから混乱しないように自分で規則を作っておくとよいかもしれません。また、当然メソッドの引数はEventHandlerデリゲートのそれと一致させておく必要があります。
+<PRE>
+void メソッド名(object sender, EventArgs e){...}
+</PRE>
+また、ボタンの背景色は、親のそれと同じになります。違う色にしたいときは、BackColorプロパティで指定します。文字色はForeColorプロパティで指定します。これも、指定しないと親と同じになります。<P>
+では、簡単なサンプルを見てみましょう。
+<PRE>
+// button01.cs
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+class button01
+{
+
+    public static void Main()
+    {
+        Form form = new MyForm();
+        Button btn = new Button();
+        btn.Parent = form;
+        btn.Location = new Point(10, 10);
+        btn.Text = "押す";
+        btn.BackColor = SystemColors.Control;
+        btn.Click += new EventHandler(btnOnClick);
+
+        Application.Run(form);
+    }
+    static void btnOnClick(object sender, EventArgs e)
+    {
+        MessageBox.Show("ボタンを押したね", "button01",
+            MessageBoxButtons.OK, MessageBoxIcon.Information);
+    }
+    
+}
+
+class MyForm : Form
+{
+    public MyForm()
+    {
+        Text = "猫でもわかるプログラミング";
+        BackColor = SystemColors.Window;
+    }
+}
+</PRE>
+実行結果は次のようになります。<P>
+<IMG SRC="../img/form1101.gif" ALIGN="left">
+「押す」ボタンを押すと「ボタンを押したね」というメッセージボックスが出現します。
+<P>
+<BR CLEAR="left"><BR>
+<HR>
+[<A HREF="../index_form.html">C# フォーム Index</A>]
+[<A HREF="../index_cs.html">C# コンソール Index</A>]
+[<A HREF="../index.html">総合Index</A>]
+[<A HREF="form_10.htm">Previous Chapter</A>]
+[<A HREF="form_12.htm">Next Chapter</A>]
+<P>
+<ADDRESS>
+Update 26/Oct/2006 By Y.Kumei<BR>
+<FONT COLOR="#FF0000">
+当ホーム・ページの一部または全部を無断で複写、複製、
+転載あるいはコンピュータ等のファイルに保存することを禁じます。
+</FONT>
+</ADDRESS>
+</BODY>
+</HTML>

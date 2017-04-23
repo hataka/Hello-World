@@ -1,0 +1,182 @@
+<HTML>
+<!--        form_51.htm        -->
+<!--        2007/01/09       -->
+<HEAD>
+<LINK REL=STYLESHEET HREF="../neko.css" TYPE="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>第５１章</TITLE>
+<base href='http://www.kumei.ne.jp/c_lang/form/'>
+<meta http-equiv='Content-Type'content='text/htm; charset=UTF-8'>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<CENTER>
+<H1>第５１章 もうちょっと改良してみる</H1>
+</CENTER>
+<HR>
+<IMG SRC="../img/my10x.gif" ALIGN="left">
+<A HREF="form_50.htm">前章</A>のプログラムをちょっとだけ改良してみます。
+<P>
+<BR CLEAR="left"><BR>
+前章では、始点、終点の座標を一つの配列に格納していましたが、ちょっと煩雑でした。
+ここでは、ほんのちょっと改良して、直線の始点・終点を格納する構造体を利用してみます。ついでに、直線の色も自由に選択できるようにしてみます。また、マウスを移動中は、選択されている色で直線を描画するようにしました。これなら、現在選択されている色がわかり便利です。<P>
+では、プログラムを見てみましょう。
+<PRE>
+// mouse04.cs
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+struct mypaint
+{
+    public Point ptStart;
+    public Point ptEnd;
+    public Color clr;
+}
+
+class mouse03 : Form
+{
+    mypaint[] mp;
+    int no;
+    Point prevpt1, prevpt2;
+    const int nMaxNo = 100;
+    Color clr;
+    int[] custom = null;
+
+    public static void Main()
+    {
+        Application.Run(new mouse03());
+    }
+
+    public mouse03()
+    {
+        Text = "猫でもわかるC#プログラミング";
+        BackColor = SystemColors.Window;
+
+        mp = new mypaint[nMaxNo];
+
+        clr = Color.Black;
+        mp[0].clr = clr;
+        
+        no = 0;
+        
+        MainMenu mm = new MainMenu();
+        Menu = mm;
+
+        MenuItem miFile = new MenuItem("ファイル(&F)");
+        mm.MenuItems.Add(miFile);
+
+        MenuItem miExit = new MenuItem("終了(&X)");
+        miFile.MenuItems.Add(miExit);
+        miExit.Click += new EventHandler(miExit_Click);
+
+        MenuItem miColor = new MenuItem("色(&C)");
+        mm.MenuItems.Add(miColor);
+
+        MenuItem miChooseColor = new MenuItem("色の選択");
+        miColor.MenuItems.Add(miChooseColor);
+        miChooseColor.Click += new EventHandler(miChooseColor_Click);
+    }
+
+    void miExit_Click(object sender, EventArgs e)
+    {
+        Close();
+    }
+
+    void miChooseColor_Click(object sender, EventArgs e)
+    {
+        ColorDialog cdlg = new ColorDialog();
+        cdlg.Color = clr;
+        cdlg.CustomColors = custom;
+
+        DialogResult dr = cdlg.ShowDialog();
+        if (dr == DialogResult.OK)
+        {
+            clr = cdlg.Color;
+            custom = cdlg.CustomColors;
+        }
+
+    }
+
+    protected override void OnMouseDown(MouseEventArgs e)
+    {
+        base.OnMouseDown(e);
+
+        if (no >= nMaxNo)
+        {
+            MessageBox.Show("設定数を超えました",
+                "限界", MessageBoxButtons.OK,
+                MessageBoxIcon.Stop);
+            return;
+        }
+
+        mp[no].ptStart = e.Location;
+        mp[no].clr = clr;
+        prevpt1 = e.Location;
+    }
+
+    protected override void OnMouseUp(MouseEventArgs e)
+    {
+        base.OnMouseUp(e);
+        
+        mp[no].ptEnd = e.Location;
+        no++;
+        Invalidate();
+    }
+
+    protected override void OnPaint(PaintEventArgs e)
+    {
+        base.OnPaint(e);
+        Graphics g = e.Graphics;
+
+        for (int i = 0; i < no; i++)
+        {
+            g.DrawLine(new Pen(new SolidBrush(mp[i].clr)),
+                mp[i].ptStart, mp[i].ptEnd);
+        }
+    }
+
+    protected override void OnMouseMove(MouseEventArgs e)
+    {
+        base.OnMouseMove(e);
+        if (e.Button == MouseButtons.None)
+            return;
+
+        Graphics g = CreateGraphics();
+        g.DrawLine(new Pen(new SolidBrush(Color.White)), prevpt1, prevpt2);
+        g.DrawLine(new Pen(new SolidBrush(clr)), e.Location, prevpt1);
+        prevpt2 = e.Location;
+        g.Dispose();
+    }
+}
+</PRE>
+mypaint構造体を作ってみました。<P>
+これに、始点・終点の座標および直線の色を格納します。<P>
+この、構造体を配列にすればよいですね。<P>
+Mainメソッドはいつも通りです。<P>
+コンストラクタで、構造体mypaintをnewしています。<P>
+メニュー項目も「色」「色の選択」を増やしました。<P>
+メニューから「色の選択」を選択すると、miChooseColor_Clickメソッドが呼び出されます。<P>
+色の選択ダイアログで、OKボタンを押すと、選択した色をフィールドのclrに格納します。
+色の選択ダイアログについては<A HREF="form_45.htm">第４５章</A>を参照してください。<P>
+マウスボタンを押した時、離した時、移動中に対応したメソッドが少しだけ、すっきりしました。<P>
+実行結果は、次のようになります。<P>
+<IMG SRC="../img/form5101.gif" ALIGN="left">
+<P>
+<BR CLEAR="left"><BR>
+<HR>
+[<A HREF="../index_form.html">C# フォーム Index</A>]
+[<A HREF="../index_cs.html">C# コンソール Index</A>]
+[<A HREF="../index.html">総合Index</A>]
+[<A HREF="form_50.htm">Previous Chapter</A>]
+[<A HREF="form_52.htm">Next Chapter</A>]
+<P>
+<ADDRESS>
+Update 09/Jan/2007 By Y.Kumei<BR>
+<FONT COLOR="#FF0000">
+当ホーム・ページの一部または全部を無断で複写、複製、
+転載あるいはコンピュータ等のファイルに保存することを禁じます。
+</FONT>
+</ADDRESS>
+</BODY>
+</HTML>

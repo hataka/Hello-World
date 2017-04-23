@@ -1,0 +1,118 @@
+<HTML>
+<!--        form_31.htm        -->
+<!--        2006/11/15       -->
+<HEAD>
+<LINK REL=STYLESHEET HREF="../neko.css" TYPE="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>第３１章 </TITLE>
+<base href='http://www.kumei.ne.jp/c_lang/form/'>
+<meta http-equiv='Content-Type'content='text/htm; charset=UTF-8'>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<CENTER>
+<H1>第３１章 コントロールにAnchorを設定してみる</H1>
+</CENTER>
+<HR>
+<IMG SRC="../img/my10x.gif" ALIGN="left">
+親フォームのサイズが変更になったとき、コントロールの親フォームに対する相対位置を
+一定にしたいときには、どうすればよいのでしょうか。
+<P>
+<BR CLEAR="left"><BR>
+たとえば、常にボタンを親フォームの右・下方に位置したいときはどうすればよいのでしょうか。<P>
+もちろん、フォームのサイズが変更になったときに送られてくるResizeイベントを処理してもよいでしょう。しかし、もっと簡単な方法があります。<P>
+コントロールのAnchorプロパティを設定すればよいのです。Control.AnchorプロパティはSystem.Windows.Forms名前空間で定義されています。<P>
+子コントロールの管理をするFormクラスなどを、コントロールのコンテナと呼ぶことがあります。Anchorはコンテナの端にコントロールを固定する方法を指定するプロパティです。
+<PRE>
+public virtual AnchorStyles Anchor { get; set; }
+</PRE>
+プロパティ値のAnchorStyles列挙体のメンバには次のようなものがあります。<P>
+<TABLE BORDER="1">
+<TH BGCOLOR="#FFFF0">メンバ</TH><TH BGCOLOR="#FFFF00">意味</TH><TR>
+<TD>Bottom</TD><TD>コントロールがコンテナの下端に固定</TD><TR>
+<TD>Left</TD><TD>コントロールがコンテナの左端に固定</TD><TR>
+<TD>None</TD><TD>コントロールは固定されない</TD><TR>
+<TD>Right</TD><TD>コントロールはコンテナの右端に固定</TD><TR>
+<TD>Top</TD><TD>コントロールはコンテナの上端に固定</TD>
+</TABLE><P>
+通常Anchorを設定する場合は
+<PRE>
+btn.Anchor = (AnchorStyles.Bottom | AnchorStyles.Right);
+</PRE>
+のように(上端または下端) | (左端または右端)のように「|」or演算子で組み合わせて使います。Locationプロパティを設定すると、Anchorプロパティの値によって、親フォームがサイズ変更になっても指定の相対位置を守ります。<P>
+また、<A HREF="form_15.htm">第１５章</A>でやったFormクラスのControlsの使い方は重要なので復習しておいてください。<P>
+では、サンプルのプログラムを見てみましょう。
+<PRE>
+// anchor01.cs
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+class anchor01 : Form
+{
+    public static void Main()
+    {
+        Application.Run(new anchor01());
+    }
+
+    public anchor01()
+    {
+        Text = "猫でもわかるC#プログラミング";
+        BackColor = SystemColors.Window;
+
+        //親のControls[0]に相当
+        Button btn = new Button();
+        btn.Parent = this;
+        btn.BackColor = SystemColors.Control;
+        btn.Text = "押す";
+        btn.Click += new EventHandler(btn_Click);
+        btn.Location = new Point(ClientSize.Width - btn.Width - 10, ClientSize.Height - btn.Height - 10);
+        btn.Anchor = (AnchorStyles.Bottom | AnchorStyles.Right);
+
+        //親のControls[1]に相当
+        TextBox tbox = new TextBox();
+        tbox.Parent = this;
+        tbox.Location = new Point(10, 10);
+        tbox.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+    }
+
+    void btn_Click(object sender, EventArgs e)
+    {
+        Button btn = (Button)sender;
+        Form parent = (Form)btn.Parent;
+        MessageBox.Show(parent.Controls[1].Text,
+            "猫C#",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information);
+    }
+}
+</PRE>
+ボタンは、親フォームの右・下に、テキストボックスは左・上に固定されます。<P>
+固定される相対位置はLocationプロパティで設定していますね。<P>
+ボタンがクリックされたときは親フォームを調べて、そのControls[1]で、テキストボックスの参照を調べています。<P>
+では、実行結果を見てみましょう。<P>
+<IMG SRC="../img/form3101.gif" ALIGN="left">
+テキストボックスは、クライアント領域の左上から上10左10だけ離れた位置にあります。<P>
+ボタンは、クライアント領域の右下隅から10づつ離れた位置にあります。
+<P>
+<BR CLEAR="left"><BR>
+<IMG SRC="../img/form3102.gif" ALIGN="left">
+フォームのサイズが変更になっても、それぞれのクライアント領域にある相対位置はかわりません。
+<P>
+<BR CLEAR="left"><BR>
+<HR>
+[<A HREF="../index_form.html">C# フォーム Index</A>]
+[<A HREF="../index_cs.html">C# コンソール Index</A>]
+[<A HREF="../index.html">総合Index</A>]
+[<A HREF="form_30.htm">Previous Chapter</A>]
+[<A HREF="form_32.htm">Next Chapter</A>]
+<P>
+<ADDRESS>
+Update 15/Nov/2006 By Y.Kumei<BR>
+<FONT COLOR="#FF0000">
+当ホーム・ページの一部または全部を無断で複写、複製、
+転載あるいはコンピュータ等のファイルに保存することを禁じます。
+</FONT>
+</ADDRESS>
+</BODY>
+</HTML>

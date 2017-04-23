@@ -1,0 +1,156 @@
+<HTML>
+<!--        form_58.htm        -->
+<!--        2007/03/20       -->
+<HEAD>
+<LINK REL=STYLESHEET HREF="../neko.css" TYPE="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>第５８章</TITLE>
+<base href='http://www.kumei.ne.jp/c_lang/form/'>
+<meta http-equiv='Content-Type'content='text/htm; charset=UTF-8'>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<CENTER>
+<H1>第５８章 StatusStripクラスを使ってみる</H1>
+</CENTER>
+<HR>
+<IMG SRC="../img/my10x.gif" ALIGN="left">
+C#2.0では、StatusBarクラスの機能が拡張されたStatusStripクラスを使うことができます。もちろんStatusBarクラスを使ってもかまいません。
+<P>
+<BR CLEAR="left"><BR>
+StatusStripクラスの継承関係は次のようになっています。
+<PRE>
+System.Object 
+   System.MarshalByRefObject 
+     System.ComponentModel.Component 
+       System.Windows.Forms.Control 
+         System.Windows.Forms.ScrollableControl 
+           System.Windows.Forms.ToolStrip 
+            System.Windows.Forms.StatusStrip
+</PRE>
+このクラスのオブジェクトを作成して、Parentプロパティに親のFormを指定します。<P>
+
+StatusBarクラスで作った、ステータスバーには、通常StatusBarPanelを載せましたが、このStatusBarParnelに相当するクラスが、ToolStripStatusLabelクラスになります。これも、C#2.0以降でないと使えません。<P>
+ToolStripStatusLabelクラスの継承関係は、次のようになっています。
+<PRE>
+System.Object 
+   System.MarshalByRefObject 
+     System.ComponentModel.Component 
+       System.Windows.Forms.ToolStripItem 
+         System.Windows.Forms.ToolStripLabel 
+          System.Windows.Forms.ToolStripStatusLabel
+</PRE>
+このクラスで、よく使うプロパティは次のようなものがあります。<P>
+<TABLE BORDER="1">
+<TH BGCOLOR="#FFFF00">プロパティ</TH><TH BGCOLOR="#FFFF00">意味</TH><TR>
+<TD>BorderSides</TD><TD>どの側に境界線を表示するかを取得・設定。ToolStripStatusLabelBorderSides列挙体で指定する。</TD><TR>
+<TD>BorderStyle</TD><TD>境界線スタイルの取得・設定。Border3DStyle列挙体で指定する。</TD><TR>
+<TD>BackColor</TD><TD>背景色の取得・設定。</TD><TR>
+<TD>Text</TD><TD>項目に表示されるテキストの取得・設定。</TD>
+</TABLE><P>
+さて、ToolStripStatusLabelBorderSides列挙体のメンバと意味は次の通りです。<P>
+<TABLE BORDER="1">
+<TH BGCOLOR="#FFFF00">メンバ</TH><TH BGCOLOR="#FFFF00">意味</TH><TR>
+<TD>All</TD><TD>ラベルのすべての側に境界線を付ける。</TD><TR>
+<TD>Bottom</TD><TD>下側のみに境界線を付ける。</TD><TR>
+<TD>Left</TD><TD>左側のみに境界線を付ける。</TD><TR>
+<TD>None</TD><TD>境界線を付けない。</TD><TR>
+<TD>Right</TD><TD>右側のみに境界線を付ける。</TD><TR>
+<TD>Top</TD><TD>上側のみに境界線を付ける。</TD>
+</TABLE><P>
+メンバ値は、ビットごとの組み合わせが可能です。<P>
+Border3DStyle列挙体のメンバと意味は、次の通りです。<P>
+<TABLE BORDER="1">
+<TH BGCOLOR="#FFFF00">メンバ</TH><TH BGCOLOR="#FFFF00">意味</TH><TR>
+<TD>Adjust</TD><TD>境界線は指定した四角形の外側に描画される。</TD><TR>
+<TD>Bump</TD><TD>境界線の内側と外側が浮き出している。</TD><TR>
+<TD>Etched</TD><TD>境界線の内外がくぼんだ状態となる。</TD><TR>
+<TD>Flat</TD><TD>3Dスタイルは適用されない。</TD><TR>
+<TD>Raised</TD><TD>境界線の内外縁で浮き出す。</TD><TR>
+<TD>RaisedInner</TD><TD>境界線の内側だけが浮き出す。</TD><TR>
+<TD>RaisedOuter</TD><TD>境界線の外側だけが浮き出す。</TD><TR>
+<TD>Sunken</TD><TD>境界線の内外がくぼんで表示。</TD><TR>
+<TD>SunkenInner</TD><TD>境界線の内縁のみくぼんで表示。</TD><TR>
+<TD>SunkenOuter</TD><TD>境界線の外側のみがくぼんで表示。</TD>
+</TABLE><P>
+ToolStripStatusLabelオブジェクトをステータスバーに載せるには、ToolStrip.Items.Addメソッドを利用します。もしくは、AddRangeメソッドを利用します。Itemsプロパティは、ToolStripItemCollection型です。<P>
+では、サンプルを見てみましょう。
+<PRE>
+// statusstrip01.cs
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+class statusstrip01 : Form
+{
+    StatusStrip ss;
+
+    public static void Main()
+    {
+        Application.Run(new statusstrip01());
+    }
+
+    public statusstrip01()
+    {
+        Text = "猫でもわかるC#プログラミング";
+        BackColor = SystemColors.Window;
+
+        ss = new StatusStrip();
+        ss.Parent = this;
+
+        ToolStripStatusLabel tssl0 = new ToolStripStatusLabel();
+        tssl0.BorderSides = ToolStripStatusLabelBorderSides.All;
+        tssl0.BorderStyle = Border3DStyle.Bump;
+        tssl0.BackColor = SystemColors.Control;
+        tssl0.Text = "Bump";
+
+        ToolStripStatusLabel tssl1 = new ToolStripStatusLabel();
+        tssl1.BorderSides = ToolStripStatusLabelBorderSides.All;
+        tssl1.BorderStyle = Border3DStyle.Raised;
+        tssl1.BackColor = SystemColors.Control;
+        tssl1.Text = "Raised";
+
+        ToolStripStatusLabel tssl2 = new ToolStripStatusLabel();
+        tssl2.BorderSides = ToolStripStatusLabelBorderSides.All;
+        tssl2.BorderStyle = Border3DStyle.Sunken;
+        tssl2.BackColor = SystemColors.Control;
+        tssl2.Text = "Sunken";
+
+        ToolStripStatusLabel tssl3 = new ToolStripStatusLabel();
+        tssl3.BorderSides = ToolStripStatusLabelBorderSides.All;
+        tssl3.BorderStyle = Border3DStyle.SunkenInner;
+        tssl3.BackColor = SystemColors.Control;
+        tssl3.Text = "SunkenInner";
+
+        ToolStripStatusLabel tssl4 = new ToolStripStatusLabel();
+        tssl4.BorderSides = ToolStripStatusLabelBorderSides.All;
+        tssl4.BorderStyle = Border3DStyle.SunkenOuter;
+        tssl4.BackColor = SystemColors.Control;
+        tssl4.Text = "SunkenOuter";
+
+        ToolStripStatusLabel[] ts = { tssl0, tssl1, tssl2, tssl3, tssl4 };
+        ss.Items.AddRange(ts);
+    }
+}
+</PRE>
+実行結果は、次のようになります。<P>
+<IMG SRC="../img/form5801.gif" ALIGN="left">
+XXInnerとか、XXOuterの違いは微妙ですね・・・
+<P>
+<BR CLEAR="left"><BR>
+<HR>
+[<A HREF="../index_form.html">C# フォーム Index</A>]
+[<A HREF="../index_cs.html">C# コンソール Index</A>]
+[<A HREF="../index.html">総合Index</A>]
+[<A HREF="form_57.htm">Previous Chapter</A>]
+[<A HREF="form_59.htm">Next Chapter</A>]
+<P>
+<ADDRESS>
+Update 25/Mar/2007 By Y.Kumei<BR>
+<FONT COLOR="#FF0000">
+当ホーム・ページの一部または全部を無断で複写、複製、
+転載あるいはコンピュータ等のファイルに保存することを禁じます。
+</FONT>
+</ADDRESS>
+</BODY>
+</HTML>

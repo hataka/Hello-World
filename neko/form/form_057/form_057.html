@@ -1,0 +1,154 @@
+<HTML>
+<!--        form_57.htm        -->
+<!--        2007/03/02       -->
+<HEAD>
+<LINK REL=STYLESHEET HREF="../neko.css" TYPE="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>第５７章</TITLE>
+<base href='http://www.kumei.ne.jp/c_lang/form/'>
+<meta http-equiv='Content-Type'content='text/htm; charset=UTF-8'>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<CENTER>
+<H1>第５７章 ステータスバーを少し実用的に使う</H1>
+</CENTER>
+<HR>
+<IMG SRC="../img/my10x.gif" ALIGN="left">
+ステータスバーには、選択されたメニュー項目の説明などを表示するのが普通です。
+<P>
+<BR CLEAR="left"><BR>
+この章では、メニュー項目が選択されたとき、その説明をステータスバーに表示するプログラムを作ります。<P>
+メニュー項目が選択されたことを知るには、MenuItemクラスのSelectイベントを処理します。MenuItem.Selectイベントは、次のように定義されています。
+<PRE>
+public event EventHandler Select
+</PRE>
+このイベントは、親メニューに関しては発生しません。<P>
+さて、選択されたメニュー項目が実行されたり、あるいはキャンセルされたときは、ステータスバーに表示された内容を消さなくてはなりません。これは、どうするかというと、MenuItemクラスのイベントを調べても解決しません。<P>
+Form.MenuCompleteイベントを利用します。これは、フォームのメニューがフォーカスを失ったときに発生します。<P>
+Formクラスから派生したクラスでは、Form.OnMenuCompleteイベントハンドラが利用できます。<P>
+では、簡単なサンプルを見てみましょう。
+<PRE>
+// status06.cs
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+class status06 : Form
+{
+    StatusBarPanel sb1, sb2;
+
+    public static void Main()
+    {
+        Application.Run(new status06());
+    }
+
+    public status06()
+    {
+        Text = "猫でもわかるC#プログラミング";
+        BackColor = SystemColors.Window;
+
+        StatusBar sb = new StatusBar();
+        sb.Parent = this;
+        sb.ShowPanels = true;
+        sb1 = new StatusBarPanel();
+        sb2 = new StatusBarPanel();
+        sb1.AutoSize = StatusBarPanelAutoSize.Contents;
+        sb2.AutoSize = StatusBarPanelAutoSize.Spring;
+
+        sb.Panels.Add(sb1);
+        sb.Panels.Add(sb2);
+
+        MenuItem miFile = new MenuItem("ファイル(&F)");
+        MenuItem miEdit = new MenuItem("編集(&E)");
+
+        MainMenu mm = new MainMenu();
+        Menu = mm;
+
+        mm.MenuItems.Add(miFile);
+        mm.MenuItems.Add(miEdit);
+
+        MenuItem miNew = new MenuItem("新規作成(&N)");
+        miNew.Click += new EventHandler(miNew_Click);
+        miNew.Select += new EventHandler(miNew_Select);
+        miFile.MenuItems.Add(miNew);
+
+        MenuItem miExit = new MenuItem("終了(&X)");
+        miExit.Click += new EventHandler(miExit_Click);
+        miExit.Select += new EventHandler(miExit_Select);
+        miFile.MenuItems.Add(miExit);
+
+        MenuItem miCopy = new MenuItem("コピー(&C)");
+        miCopy.Click += new EventHandler(miCopy_Click);
+        miCopy.Select += new EventHandler(miCopy_Select);
+        miEdit.MenuItems.Add(miCopy);
+    }
+
+    void miNew_Select(object sender, EventArgs e)
+    {
+        sb1.Text = "新規に作成します";
+    }
+
+    void miNew_Click(object sender, EventArgs e)
+    {
+        MessageBox.Show("「新規作成」が選択されました",
+            "猫でもわかるC#プログラミング",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information);
+    }
+
+    void miExit_Select(object sender, EventArgs e)
+    {
+        sb1.Text = "このプログラムを終了します";
+    }
+
+    void miExit_Click(object sender, EventArgs e)
+    {
+        Close();
+    }
+
+    void miCopy_Select(object sender, EventArgs e)
+    {
+        sb1.Text = "コピーします";
+    }
+
+    void miCopy_Click(object sender, EventArgs e)
+    {
+        MessageBox.Show("「コピー」が選択されました",
+            "猫でもわかるC#プログラミング",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information);
+    }
+
+    protected override void OnMenuComplete(EventArgs e)
+    {
+        base.OnMenuComplete(e);
+        sb1.Text = "";
+    }
+}
+</PRE>
+status06クラスはFormクラスから継承されています。<P>
+コンストラクタでは、StatusBarオブジェクトとStatusBarPanelオブジェクトを生成しています。<P>
+また、メニューを作るときに、それぞれのメニュー項目に対して、異なる名前のSelectイベントハンドラをインストールしている点に注意してください。<P>
+status06クラスは、Formクラスから継承しているので、OnMenuCompleteメソッドを利用しています。<P>
+実行結果は次のようになります。<P>
+<IMG SRC="../img/form5701.gif" ALIGN="left">
+選択されたメニュー項目の説明が、ステータスバーに表示されています。
+<P>
+<BR CLEAR="left"><BR>
+<HR>
+[<A HREF="../index_form.html">C# フォーム Index</A>]
+[<A HREF="../index_cs.html">C# コンソール Index</A>]
+[<A HREF="../index.html">総合Index</A>]
+[<A HREF="form_56.htm">Previous Chapter</A>]
+[<A HREF="form_58.htm">Next Chapter</A>]
+<P>
+<ADDRESS>
+Update 07/Mar/2007 By Y.Kumei<BR>
+<FONT COLOR="#FF0000">
+当ホーム・ページの一部または全部を無断で複写、複製、
+転載あるいはコンピュータ等のファイルに保存することを禁じます。
+</FONT>
+</ADDRESS>
+</BODY>
+</HTML>

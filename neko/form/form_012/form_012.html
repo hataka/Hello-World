@@ -1,0 +1,102 @@
+<HTML>
+<!--        form_12.htm        -->
+<!--        2006/10/27       -->
+<HEAD>
+<LINK REL=STYLESHEET HREF="../neko.css" TYPE="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>第１２章 </TITLE>
+<base href='http://www.kumei.ne.jp/c_lang/form/'>
+<meta http-equiv='Content-Type'content='text/htm; charset=UTF-8'>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<CENTER>
+<H1>第１２章 ボタンのイベント処理</H1>
+</CENTER>
+<HR>
+<IMG SRC="../img/my10x.gif" ALIGN="left">
+<A HREF="form_11.htm">前章</A>では、ボタンのClickイベントにEventHandlerデリゲートを関連づけました。
+<P>
+<BR CLEAR="left"><BR>
+複数のボタンがあるときは、それぞれにイベントハンドラーをインストールするのが一般的です。しかし、一つのイベントハンドラーにまとめることも可能です。この場合、どのコントロールから、イベントが発生したのかを区別する必要があります。<P>
+これには、引数のobject senderを利用します。
+<PRE>
+// button02.cs
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+class button02 : Form
+{
+    static Button btn1, btn2;
+
+    public static void Main()
+    {
+        button02 f = new button02();
+        
+        Application.Run(f);
+    }
+
+    static void btnOnClick(object sender, EventArgs e)
+    {
+        String mtitle = "button02";
+
+        Button btn = (Button)sender;
+
+        if (btn == btn1)
+            MessageBox.Show("ボタン１が押されました", mtitle);
+        else if (btn == btn2)
+            MessageBox.Show("ボタン２が押されました", mtitle);
+        else
+            MessageBox.Show("これは何かの間違いです", mtitle);       
+    }
+
+    public button02()
+    {
+        Text = "猫でもわかるプログラミング";
+        BackColor = SystemColors.Window;
+
+        btn1 = new Button();
+        btn1.Parent = this;
+        btn1.Text = "ボタン&1";
+        btn1.BackColor = SystemColors.Control;
+        btn1.Location = new Point(10, 10);
+        btn1.Click += new EventHandler(btnOnClick);
+
+        btn2 = new Button();
+        btn2.Parent = this;
+        btn2.Text = "ボタン&2";
+        btn2.BackColor = SystemColors.Control;
+        btn2.Location = new Point(20 + btn1.Width, 10);
+        btn2.Click += new EventHandler(btnOnClick);
+
+    }
+}
+</PRE>
+ボタンのテキストを指定するところで
+<PRE>
+btn1.Text = "ボタン&1";
+btn2.Text = "ボタン&2";
+</PRE>
+で「&」の文字が入っていることに注意してください。この文字自体は表示されません。その次の文字にアンダーラインが付き、その文字キーを打つと、そのボタンを押したことになります。上の例で言えば「1」キーを打つと「ボタン1」をクリックしたのと同じ効果が得られます。<P>
+では、実行結果を見てみましょう。<P>
+<IMG SRC="../img/form1201.gif" ALIGN="left">
+イベントハンドラーがひとつでも、どのボタンが押されたのかは判断できますね。
+<P>
+<BR CLEAR="left"><BR>
+<HR>
+[<A HREF="../index_form.html">C# フォーム Index</A>]
+[<A HREF="../index_cs.html">C# コンソール Index</A>]
+[<A HREF="../index.html">総合Index</A>]
+[<A HREF="form_11.htm">Previous Chapter</A>]
+[<A HREF="form_13.htm">Next Chapter</A>]
+<P>
+<ADDRESS>
+Update 27/Oct/2006 By Y.Kumei<BR>
+<FONT COLOR="#FF0000">
+当ホーム・ページの一部または全部を無断で複写、複製、
+転載あるいはコンピュータ等のファイルに保存することを禁じます。
+</FONT>
+</ADDRESS>
+</BODY>
+</HTML>

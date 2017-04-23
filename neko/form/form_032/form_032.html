@@ -1,0 +1,144 @@
+<HTML>
+<!--        form_32.htm        -->
+<!--        2006/11/16       -->
+<HEAD>
+<LINK REL=STYLESHEET HREF="../neko.css" TYPE="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>第３２章 </TITLE>
+<base href='http://www.kumei.ne.jp/c_lang/form/'>
+<meta http-equiv='Content-Type'content='text/htm; charset=UTF-8'>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<CENTER>
+<H1>第３２章 コントロールにDockを設定してみる</H1>
+</CENTER>
+<HR>
+<IMG SRC="../img/my10x.gif" ALIGN="left">
+今まで出てきたButtonとか、TextBoxなどのコントロールにはAnchorの他に、Dockというプロパティがあります。これを設定することにより親フォームの大きさが変更になると、そのクライアント領域のどこかにくっついて伸び縮みします。
+<P>
+<BR CLEAR="left"><BR>
+たとえば、クライアント領域に上辺をDockに設定すると、そのコントロールは上辺いっぱいに広がってくっつきます。Anchorと同時には設定できません。もしした場合は、後からの設定が有効です。<P>
+DockプロパティはSystem.Windows.Forms名前空間で定義されています。
+<PRE>
+public virtual DockStyle Dock { get; set; }
+</PRE>
+プロパティ値のDockStyle列挙体のメンバと意味は次の通りです。<P>
+<TABLE BORDER="1">
+<TH BGCOLOR="#FFFF00">メンバ</TH><TH BGCOLOR="#FFFF00">意味</TH><TR>
+<TD>Bottom</TD><TD>格納する側の下端にドッキングされる</TD><TR>
+<TD>Fill</TD><TD>格納する側の４辺にドッキングされる</TD><TR>
+<TD>Left</TD><TD>格納する側の左端にドッキングされる</TD><TR>
+<TD>None</TD><TD>ドッキングされない</TD><TR>
+<TD>Right</TD><TD>格納される側の右端にドッキングされる</TD><TR>
+<TD>Top</TD><TD>格納される側の上端にドッキングされる</TD>
+</TABLE><P>
+では、DockをBottomに設定した２つのコントロールがあったらどうなるのでしょうか。
+重なり合ってしまうのでしょうか。後から設定した方が、より下端に行き、その上に次のコントロールがくっつきます。<P>
+何はともあれ、サンプルを見てみましょう。
+<PRE>
+// dock01.cs
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+class dock01
+{
+    public static void Main()
+    {
+        MyForm mf = new MyForm();
+
+        MyTextBox mt = new MyTextBox();
+        mt.Parent = mf;
+
+        MyButton mb1 = new MyButton();
+        mb1.Parent = mf;
+
+        MyClsButton mcls = new MyClsButton();
+        mcls.Parent = mf;
+        
+        Application.Run(mf);
+    }
+}
+
+class MyForm : Form
+{
+    public MyForm()
+    {
+        Text = "猫でもわかるC#プログラミング";
+        BackColor = SystemColors.Window;
+    }
+}
+
+class MyButton : Button
+{
+    public MyButton()
+    {
+        Text = "押す";
+        BackColor = SystemColors.Control;
+        Dock = DockStyle.Bottom;
+    }
+
+    protected override void OnClick(EventArgs e)
+    {
+        base.OnClick(e);
+        MessageBox.Show(Parent.Controls[0].Text,
+            "猫C#",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information);
+    }
+}
+
+class MyClsButton : Button
+{
+    public MyClsButton()
+    {
+        Text = "消す";
+        BackColor = SystemColors.Control;
+        Dock = DockStyle.Bottom;
+    }
+
+    protected override void OnClick(EventArgs e)
+    {
+        base.OnClick(e);
+        Parent.Controls[0].Text = "";
+        Parent.Controls[0].Focus();
+    }
+}
+
+class MyTextBox : TextBox
+{
+    public MyTextBox()
+    {
+        Dock = DockStyle.Top;
+        Font = new Font("ＭＳ ゴシック", 26);
+    }
+}
+</PRE>
+テキストボックスは上端に、２つのボタンは下端にドッキングします。「消す」ボタンの方が後から、設定しているので一番下端が「消す」ボタン、その上に「押す」ボタンが来るはずです。<P>
+<IMG SRC="../img/form3201.gif" ALIGN="left">
+テキストボックスは上端に、「消す」ボタンが一番下端に、その次に「押す」ボタンが来ていますね。
+<P>
+<BR CLEAR="left"><BR>
+<IMG SRC="../img/form3202.gif" ALIGN="left">
+<P>
+<BR CLEAR="left"><BR>
+親フォームのサイズが変更になると、自動的に子コントロールのサイズも変更されます。
+<P>
+さて、このプログラムでは「押す」ボタンと「消す」ボタンが別々のクラスとして書かれていますが、これを一つのクラスにして書き直してみてください。
+<HR>
+[<A HREF="../index_form.html">C# フォーム Index</A>]
+[<A HREF="../index_cs.html">C# コンソール Index</A>]
+[<A HREF="../index.html">総合Index</A>]
+[<A HREF="form_31.htm">Previous Chapter</A>]
+[<A HREF="form_33.htm">Next Chapter</A>]
+<P>
+<ADDRESS>
+Update 16/Nov/2006 By Y.Kumei<BR>
+<FONT COLOR="#FF0000">
+当ホーム・ページの一部または全部を無断で複写、複製、
+転載あるいはコンピュータ等のファイルに保存することを禁じます。
+</FONT>
+</ADDRESS>
+</BODY>
+</HTML>

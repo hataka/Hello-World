@@ -1,0 +1,97 @@
+<HTML>
+<!--        form_13.htm        -->
+<!--        2006/10/28       -->
+<HEAD>
+<LINK REL=STYLESHEET HREF="../neko.css" TYPE="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>第１３章 </TITLE>
+<base href='http://www.kumei.ne.jp/c_lang/form/'>
+<meta http-equiv='Content-Type'content='text/htm; charset=UTF-8'>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<CENTER>
+<H1>第１３章 ボタンを継承してみる</H1>
+</CENTER>
+<HR>
+<IMG SRC="../img/my10x.gif" ALIGN="left">
+独自のボタンクラスをButtonクラスから継承してみます。
+<P>
+<BR CLEAR="left"><BR>
+独自のボタンクラスがあると、On何タラ系メソッドが使えます。<P>
+ButtonクラスにはOnClickメソッドがあるので、これを使えばイベントにデリゲートを関連づける作業がいらなくなります。<P>
+では、早速プログラムを見てみましょう。
+<PRE>
+// button03.cs
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+class button03
+{
+    public static void Main()
+    {
+        MyForm mf = new MyForm();
+
+        MyButton mb1 = new MyButton("ボタン１", mf, new Point(10, 10));
+
+        MyButton mb2 = new MyButton("ボタン２", mf, new Point(20 + mb1.Width, 10));
+
+        Application.Run(mf);
+    }
+}
+
+class MyForm : Form
+{
+    public MyForm()
+    {
+        Text = "猫でもわかるプログラミング";
+        BackColor = SystemColors.Window;
+    }
+}
+
+class MyButton : Button
+{
+    string btnstr;
+
+    public MyButton(string str, Form form, Point pt)
+    {
+        Text = str;
+        Parent = form;
+        Location = pt;
+        BackColor = SystemColors.Control;
+        btnstr = str;
+    }
+    protected override void OnClick(EventArgs e)
+    {
+        base.OnClick(e);
+        MessageBox.Show(btnstr + "を押したね", "猫でもわかるプログラミング",
+            MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+    }
+}
+</PRE>
+最期の方のMyButtonクラスを見てみましょう。これは、Buttonクラスを継承しています。<P>コンストラクタMyButtonは、引数を利用してMyButtonクラスのText, Parent, Locationプロパティを設定しています。また、Textは、btnstrフィールドにも保存しています。これを利用して、ボタンの区別をしようというものです。<P>
+OnClickメソッドをオーバーライドしています。OnClickメソッドは、Controlクラスから継承されてきています。これで、Clickイベントに対応できます。<P>
+ここでは、「btnstr + "を押したね"」というメッセージボックスを出していますが、btnstrは、コンストラクタでもらってきたstringですね。<P>
+Mainメソッドでは、MyButton(表示する文字列, 親, 位置)でボタンを作ることができるので、すっきりした形になります。<P>
+実行結果は、次のようになります。<P>
+<IMG SRC="../img/form1301.gif" ALIGN="left">
+<P>
+<BR CLEAR="left"><BR>
+
+<HR>
+[<A HREF="../index_form.html">C# フォーム Index</A>]
+[<A HREF="../index_cs.html">C# コンソール Index</A>]
+[<A HREF="../index.html">総合Index</A>]
+[<A HREF="form_12.htm">Previous Chapter</A>]
+[<A HREF="form_14.htm">Next Chapter</A>]
+<P>
+<ADDRESS>
+Update 28/Oct/2006 By Y.Kumei<BR>
+<FONT COLOR="#FF0000">
+当ホーム・ページの一部または全部を無断で複写、複製、
+転載あるいはコンピュータ等のファイルに保存することを禁じます。
+</FONT>
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,163 @@
+<HTML>
+<!--        form_15.htm        -->
+<!--        2006/10/30       -->
+<HEAD>
+<LINK REL=STYLESHEET HREF="../neko.css" TYPE="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>第１５章 </TITLE>
+<base href='http://www.kumei.ne.jp/c_lang/form/'>
+<meta http-equiv='Content-Type'content='text/htm; charset=UTF-8'>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<CENTER>
+<H1>第１５章 まとめて子供の面倒をみる</H1>
+</CENTER>
+<HR>
+<IMG SRC="../img/my10x.gif" ALIGN="left">
+何とも変な表題です。
+<P>
+<BR CLEAR="left"><BR>
+ボタンなどの子供コントロールがたくさんできたとき、まとめて面倒を見られれば便利ですね。<P>
+Formクラスには、Controlsというプロパティがあります。
+<PRE>
+public ControlCollection Controls { get; }
+</PRE>
+戻り値は、ControlCollectionです。これは、Controlクラスから派生したクラスでコントロールのコレクションを表します。<P>
+この、Addメソッドを呼び出すことにより、コントロールをコレクションに追加できます。<P>
+たとえば、次のようにして利用できます。
+<PRE>
+MyForm mf = new MyForm();
+Button btn1 = new Button();
+mf.Controls.Add(btn1);
+</PRE>
+これで、btn1はmfの子供となりました。今までは、btn1.Parent = mf;というようにしていましたね。また、上の例ではmf.Controls[0],...mf.Controls[n]で子供コントロールの参照を取得できます。<P>
+では、簡単なサンプルを見てみましょう。
+<PRE>
+// controlcollection01.cs
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+struct MyStr
+{
+    public static string strTitle;
+}
+
+class controlcollection01
+{
+    public static void Main()
+    {
+        MyForm mf = new MyForm();
+
+        Button btn1 = new Button();
+        btn1.Text = "ボタン１(&1)";
+        btn1.BackColor = SystemColors.Control;
+        btn1.Location = new Point(10, 10);
+        btn1.Click += new EventHandler(btn_Click);
+
+        Button btn2 = new Button();
+        btn2.Text = "ボタン２(&2)";
+        btn2.BackColor = SystemColors.Control;
+        btn2.Location = new Point(20 + btn1.Width, 10);
+        btn2.Click += new EventHandler(btn_Click);
+
+        mf.Controls.Add(btn1);
+        mf.Controls.Add(btn2);
+
+        Application.Run(mf);
+    }
+
+    static void btn_Click(object sender, EventArgs e)
+    {
+        Button from = (Button)sender;
+        string str;
+
+        if (from.Parent.Controls[0] == (Button)sender)
+        {
+            str = "ボタン１を押したね";
+            MyStr.strTitle = str;
+        }
+        else if (from.Parent.Controls[1] == (Button)sender)
+        {
+            str = "ボタン２を押したね";
+            MyStr.strTitle = str;
+        }
+        else
+        {
+            str = "";
+            MyStr.strTitle = "";
+        }
+        from.Parent.Invalidate();
+        MessageBox.Show(str, "猫でもわかるプログラミング",
+            MessageBoxButtons.OK, MessageBoxIcon.Information);
+    }
+}
+
+class MyForm : Form
+{
+    public MyForm()
+    {
+        Text = "ねこでもわかるプログラミング";
+        BackColor = SystemColors.Window;
+    }
+
+    protected override void OnPaint(PaintEventArgs e)
+    {
+        base.OnPaint(e);
+        Graphics g = e.Graphics;
+        Font font = new Font("ＭＳ ゴシック", 14);
+        g.DrawString(MyStr.strTitle, font, Brushes.Black,
+            new PointF(10.0F, this.Controls[0].Height + 20.0F));
+    }
+}
+</PRE>
+MyStr構造体は、ボタンがクリックされた時出されるメッセージボックスに表示されるテキストを保持します。strTitleフィールドがstaticになっている点に注意してください。<P>
+Mainメソッドでは、MyFormクラスのインスタンスmfを生成しています。<P>
+次に、ボタンbtn1, btn2を作っていますが、親は指定していません。<P>
+次に
+<PRE>
+mf.Controls.Add(btn1);
+mf.Controls.Add(btn2);
+</PRE>
+として、mfの子供にbtn1とbtn2を加えています。<P>
+ボタンがクリックされたときのイベントハンドラはどちらのボタンもbtn_Clickメソッドに指定しています。<P>
+btn_Clickメソッドのsenderは、イベントの送信元を表しているので、これが、親フォームのControls[0]なら、btn1, Controls[1]なbtn2がクリックされたことを表しています。<P>
+どのボタンが押されたかがわかったら、メッセージボックスに表示する文字列を作ります。そして、その文字列をMyStr構造体のstrTitleメンバに設定します。<P>
+メッセージボックスに表示する文字列が決定したところで
+<PRE>
+from.Parent.Invalidate();
+</PRE>
+としています。fromはクリックされたボタンですから、from.Parentは親フォームですね。
+親フォームに無効領域を発生させています。これで、フォームに文字列を表示させます。<P>
+次に、決定した文字列をメッセージボックスで表示しています。<P>
+MyFormクラスはFormクラスを継承しています。<P>
+OnPaintメソッドをオーバーライドして、親フォームに文字列を表示します。
+ここでも、表示位置のy座標を
+<PRE>
+this.Controls[0].Height + 20.0F
+</PRE>
+としている点に注意してください。<P>
+今回は、FormクラスのControlsプロパティを使っていろいろなことをしてみました。<P>
+実行結果は、次のような感じになります。<P>
+<IMG SRC="../img/form1501.gif" ALIGN="left">
+見た目は、今までとたいして変わりありませんが、中でやっていることは、
+結構進化(?)してきています。
+<P>
+<BR CLEAR="left"><BR>
+<HR>
+[<A HREF="../index_form.html">C# フォーム Index</A>]
+[<A HREF="../index_cs.html">C# コンソール Index</A>]
+[<A HREF="../index.html">総合Index</A>]
+[<A HREF="form_14.htm">Previous Chapter</A>]
+[<A HREF="form_16.htm">Next Chapter</A>]
+<P>
+<ADDRESS>
+Update 30/Oct/2006 By Y.Kumei<BR>
+<FONT COLOR="#FF0000">
+当ホーム・ページの一部または全部を無断で複写、複製、
+転載あるいはコンピュータ等のファイルに保存することを禁じます。
+</FONT>
+</ADDRESS>
+</BODY>
+</HTML>

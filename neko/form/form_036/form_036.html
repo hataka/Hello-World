@@ -1,0 +1,128 @@
+<HTML>
+<!--        form_36.htm        -->
+<!--        2006/11/20       -->
+<HEAD>
+<LINK REL=STYLESHEET HREF="../neko.css" TYPE="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>第３６章 </TITLE>
+<base href='http://www.kumei.ne.jp/c_lang/form/'>
+<meta http-equiv='Content-Type'content='text/htm; charset=UTF-8'>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<CENTER>
+<H1>第３６章 グループボックスを使ってみる</H1>
+</CENTER>
+<HR>
+<IMG SRC="../img/my10x.gif" ALIGN="left">
+ラジオボタンをひとまとまりのグループとして扱うときには、ラベルの他にグループボックスも使えます。
+<P>
+<BR CLEAR="left"><BR>
+もちろん、グループボックスには、ラジオボタンの他にもどんなコントロールをおいてもかまいません。<P>
+GroupBoxクラスの継承関係は、次のようになっています。
+<PRE>
+System.Object 
+   System.MarshalByRefObject 
+     System.ComponentModel.Component 
+       System.Windows.Forms.Control 
+        System.Windows.Forms.GroupBox
+
+</PRE>
+使い方は、簡単です。他のコントロール類とほとんど同じ扱いです。<P>
+この章のサンプルでは、ラジオボタンのプロパティのAutoSizeも利用しています。
+これは、ButtonBaseクラスのAutoSizeプロパティをオーバーライドしています。
+<PRE>
+public override bool AutoSize { get; set; }
+</PRE>
+内容に合わせてコントロールのサイズを調整するときはtrue,そうでないときはfalseとなります。(C#2.0から追加になったメンバです)<P>
+では、サンプルを見てみましょう。
+<PRE>
+// groupbox01.cs
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+class groupbox01
+{
+    static RadioButton rbmale, rbfemale;
+
+    public static void Main()
+    {
+        MyForm myform = new MyForm();
+
+        rbmale = new RadioButton();
+        rbmale.Text = "男性";
+        rbmale.Location = new Point(20, 20);
+        rbmale.AutoSize = true;
+        rbmale.Checked = true;
+
+        rbfemale = new RadioButton();
+        rbfemale.Text = "女性";
+        rbfemale.Location = new Point(20, 25 + rbmale.Height);
+        rbfemale.AutoSize = true;
+
+        GroupBox gb = new GroupBox();
+        gb.Text = "性別";
+        gb.Location = new Point(10, 10);
+        gb.Width = rbmale.Width + 10;
+        gb.Height = rbmale.Height * 2 + 30;
+
+        Button btn = new Button();
+        btn.Text = "押す";
+        btn.Location = new Point(20, gb.Location.Y + gb.Height + 10);
+        btn.BackColor = SystemColors.Control;
+        btn.Click += new EventHandler(btn_Click);
+
+        myform.Controls.Add(gb);
+        gb.Controls.Add(rbmale);
+        gb.Controls.Add(rbfemale);
+        myform.Controls.Add(btn);
+
+        Application.Run(myform);
+    }
+
+    static void btn_Click(Object sender, EventArgs e)
+    {
+        if (rbmale.Checked)
+            MessageBox.Show("男性が選択されています",
+                "猫でもわかるC#",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+        else
+            MessageBox.Show("女性が選択されています",
+                "猫でもわかるC#",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+    }
+}
+
+class MyForm : Form
+{
+    public MyForm()
+    {
+        Text = "猫でもわかるC#プログラミング";
+        BackColor = SystemColors.Window;
+    }
+}
+</PRE>
+特に、どうということはないですね。実行結果は次のようになります。<P>
+<IMG SRC="../img/form3601.gif" ALIGN="left">
+「押す」ボタンを押すと、選択されている項目をメッセージボックスで表示します。
+<P>
+<BR CLEAR="left"><BR>
+<HR>
+[<A HREF="../index_form.html">C# フォーム Index</A>]
+[<A HREF="../index_cs.html">C# コンソール Index</A>]
+[<A HREF="../index.html">総合Index</A>]
+[<A HREF="form_35.htm">Previous Chapter</A>]
+[<A HREF="form_37.htm">Next Chapter</A>]
+<P>
+<ADDRESS>
+Update 20/Nov/2006 By Y.Kumei<BR>
+<FONT COLOR="#FF0000">
+当ホーム・ページの一部または全部を無断で複写、複製、
+転載あるいはコンピュータ等のファイルに保存することを禁じます。
+</FONT>
+</ADDRESS>
+</BODY>
+</HTML>

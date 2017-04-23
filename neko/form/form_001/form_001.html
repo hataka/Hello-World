@@ -1,0 +1,92 @@
+<HTML>
+<!--        form_01.htm        -->
+<!--        2006/10/16       -->
+<HEAD>
+<LINK REL=STYLESHEET HREF="../neko.css" TYPE="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>第１章 </TITLE>
+<base href='http://www.kumei.ne.jp/c_lang/form/'>
+<meta http-equiv='Content-Type'content='text/htm; charset=UTF-8'>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<CENTER>
+<H1>
+第１章 フォーム・プログラミングの基礎 
+</H1>
+</CENTER>
+<HR>
+<IMG SRC="../img/my10x.gif" ALIGN="left">
+C#では、ウィンドウのことをフォームといいます。フォームに関するさまざまな機能はFormクラスで提供されます。
+<P>
+<BR CLEAR="left"><BR>
+すでに、コンソール編<A HREF="../cs/cs_70.htm">第７０章</A>で簡単なフォームの作り方を解説しました。そこでは、Formクラスからフォームを作りました。また、この作り方は一般的ではないことも書きました。<P>
+他の方法としては、Mainメソッドをメンバに持つクラスをFormクラスから継承する、あるいはMainメソッドをメンバとして持たないクラスをFormクラスから継承する、ということが考えられます。さらに、Visual C#を使用している場合はフォーム・デザイナを使うという方法もあります。<P>
+<TABLE BORDER="1">
+<TH BGCOLOR="#FFFF00"><BR></TH><TH BGCOLOR="#FFFF00">方法</TH><TR>
+<TD>1</TD><TD>MainメソッドでFormオブジェクトを生成する</TD><TR>
+<TD>2</TD><TD>Mainメソッドを有するクラスをFormクラスから継承する</TD><TR>
+<TD>3</TD><TD>Mainメソッドを有しないクラスをFormクラスから継承する</TD><TR>
+<TD>4</TD><TD>デザイナ等のツールを使用する</TD><TR>
+<TD>5</TD><TD>その他の方法</TD>
+</TABLE><P>
+この章では方法２と３でサンプルを作ってみます。なお、方法４はFormプログラミングの仕組が充分にわかってから利用してください。訳がわからず、適当にいじっていては全く進歩がありません。<P>
+まずは、方法２でフォームを作ってみます。<P>
+前準備は、参照設定にSystem.dll, System.Drawing.dll, System.Windows.Forms.dllを追加して、プロジェクトのプロパティで「出力の種類」を「Windowsアプリケーション」にします。(この章のサンプルではSystem.Drawing.dllは不要ですが、すぐに必要になるので追加しておきます)
+<PRE>
+// form02.cs
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+class form02 : Form
+{
+    public static void Main()
+    {
+        form02 f2 = new form02();
+        Application.Run(f2);
+    }
+}
+</PRE>
+using System.Drawingの行は無くてもかまいませんが、一般的なフォーム・プログラミングではすぐに必要になるので、あえて入れてあります。<P>
+では、方法３でフォームを作ってみましょう。
+<PRE>
+// form03.cs
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+class form03
+{
+    public static void Main()
+    {
+        MyForm mf = new MyForm();
+        Application.Run(mf);
+    }
+}
+
+// 今は独自のものが無い!
+class MyForm : Form
+{
+}
+</PRE>
+さて、Application.Run(...)とは、一体何なのでしょうか。<P>
+また、できたフォームにテキストやグラフィックスを描画するにはどうしたらよいのでしょうか。<P>
+次章より少しずつ解説していくことにします。
+<HR>
+[<A HREF="../index_form.html">C# フォーム Index</A>]
+[<A HREF="../index_cs.html">C# コンソール Index</A>]
+[<A HREF="../index.html">総合Index</A>]
+<!--[<A HREF="">Previous Chapter</A>]-->
+[<A HREF="form_02.htm">Next Chapter</A>]
+<P>
+<ADDRESS>
+Update 16/Oct/2006 By Y.Kumei<BR>
+<FONT COLOR="#FF0000">
+当ホーム・ページの一部または全部を無断で複写、複製、
+転載あるいはコンピュータ等のファイルに保存することを禁じます。
+</FONT>
+</ADDRESS>
+</BODY>
+</HTML>
