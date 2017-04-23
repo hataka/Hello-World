@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<package title="TemplateEmbedScript1.wsf">
+<job id="snippet1">
+	<resource id="code"><![CDATA[
+
+]]></resource>
+	<script language="JScript" src="F:\WSH\wsf\common_lib.js"/>
+	<script language="JScript"><![CDATA[
+		var executable = "C:\\cygwin\\usr\\local\\bin\\rhino.bat";
+		var filename = "Main.js"
+
+		//WScript.Echo(getResource("code"));
+		var shell = new ActiveXObject("WScript.Shell");
+		shell.Run("cmd.exe /k "+ executable + "  "+ createTempFile(getResource("code"),filename), 0, false);
+
+	]]></script>
+</job>
+</package>
+
