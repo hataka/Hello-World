@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ====================================================================== -->
+<!-- Ant build file (http://ant.apache.org/) for Ant 1.6.2 or above.        -->
+<!-- ====================================================================== -->
+
+<project name="mvn-app" default="package" basedir=".">
+
+  <!-- ====================================================================== -->
+  <!-- Import maven-build.xml into the current project                        -->
+  <!-- ====================================================================== -->
+<import file="maven-build.xml"/>
+
+
+	<!-- mvn antrun:run -Dtarget=call -->
+	<target name="call">
+		<echo message="${classpath}" />
+	</target>
+  
+	<!-- mvn antrun:run -Dtarget=run -->
+	<target name="run">
+		<java classname="com.tuyano.App" classpath="${classpath}" failonerror="true" fork="yes">
+			<!-- classpath refid="main.classpath"/ -->
+		</java>
+	</target>
+  
+  <!-- ====================================================================== -->
+  <!-- Help target                                                            -->
+  <!-- ====================================================================== -->
+
+
+  <target name="help">
+    <echo message="Please run: $ant -projecthelp"/>
+  </target>
+
+</project>
