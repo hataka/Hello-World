@@ -1,6 +1,8 @@
-EmbedAnt.wsf
-EmbedAnt.xml
+EmbedAnt/EmbedAnt.xml
+EmbedAnt/swing-tips_build.xml
+EmbedAnt/swt_snippet_build.xml
 EmbedWsf/CreateXmlDom.js
+EmbedWsf/EmbedAnt.wsf
 EmbedWsf/EmbedScript.wsf
 EmbedWsf/EmbedWsf.fdp
 EmbedWsf/Embedphp.wsf
@@ -15,10 +17,9 @@ EmbedWsf/obj/FDTreeMenuData.txt
 EmbedWsf/obj/FDTreeMenuData_org.txt
 EmbedWsf/obj/antPluginData.txt
 EmbedWsf/php_lib.js
-README.md
 maven/mvn-app/build.xml
 maven/mvn-app/maven-build.xml
 maven/mvn-app/pom.xml
-swing-tips_build.xml
-swt_snippet_build.xml
+README.md
+ls-files.txt
 test.txt
