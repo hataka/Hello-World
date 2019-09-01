@@ -4,7 +4,7 @@
 <p align="center">
 中央揃え  
 
-<img src="http://kahata.travel.coocan.jp/picture/Sea/sea002.jpg" />
+<!-- <img src="http://kahata.travel.coocan.jp/picture/Sea/sea002.jpg" /> -->
 </p>
 
 <img src="https://drive.google.com/uc?export=view&id=0Bye2xdoobG-JcXhFU29GSG94eGpHSHZUWmZHRUljTUpyeVpv" width=320 height=240 />
